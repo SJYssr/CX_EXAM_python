@@ -12,7 +12,8 @@
 # 时间日历
  - 2024.12.26 项目开始，创建代码仓库
  - 2024.12.27 创建[README.md](https://github.com/SJYssr/CX_EXAM_python/blob/main/README.md)和[GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE) 协议
- - 2024.12.27 创建[demo1.py](https://github.com/SJYssr/CX_EXAM_python/blob/main/demo1.py)文件，该文件实现了界面透明度（鼠标右键透明度在0.2-0.5转换，CTRL+滚轮上/下滚动透明度增加/减少），快速退出（F2）基本功能
+ - 2024.12.27 创建[demo1.py](https://github.com/SJYssr/CX_EXAM_python/blob/main/demo1.py)文件，实现了界面透明度（鼠标右键透明度在0.2-0.5转换，CTRL+滚轮上/下滚动透明度增加/减少），快速退出（esc）
+ - 2024.12.27 增加快捷隐藏(F3)将窗口隐藏到左侧边框
 
 
 ## :warning: 免责声明
