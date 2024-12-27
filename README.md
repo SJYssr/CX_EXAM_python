@@ -10,8 +10,9 @@
 # 以上都是废话，一个都没实现呢
 ## 总而言之，该项目还在开发中，功能还未完善
 # 时间日历
- - 2024.12.27 项目开始，创建代码仓库
- - 2024.12.28 创建[README.md](https://github.com/SJYssr/CX_EXAM_python/blob/main/README.md)和[GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE) 协议
+ - 2024.12.26 项目开始，创建代码仓库
+ - 2024.12.27 创建[README.md](https://github.com/SJYssr/CX_EXAM_python/blob/main/README.md)和[GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE) 协议
+ - 2024.12.27 创建[demo1.py](https://github.com/SJYssr/CX_EXAM_python/blob/main/demo1.py)文件，该文件实现了界面透明度，快速退出（F2）基本功能
 
 
 ## :warning: 免责声明
