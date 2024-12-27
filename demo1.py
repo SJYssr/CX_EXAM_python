@@ -51,7 +51,7 @@ root.bind("<Button-3>", change_opacity0)  # <Button-3> 表示鼠标右键
 root.bind("<Control-MouseWheel>", change_opacity)
 # 绑定关闭窗口事件
 root.bind("<F2>", close_window)
-current_opacity = 0.5  # 初始透明度设置为 0.2
+current_opacity = 0.5  # 初始透明度设置为 0.5
 keep_on_top()  # 启动保持最上层功能
 
 root.mainloop()
