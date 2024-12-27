@@ -37,12 +37,28 @@ def close_window(event):
     """关闭窗口"""
     root.destroy()
 
+def change_weight(event):
+    """键盘按下事件处理函数"""
+    global is_small, current_opacity
+    if is_small:
+        root.geometry("300x533+0+380")  # 将窗口大小改为 300x533
+        root.attributes("-alpha", current_opacity)  # 设置窗口透明度为之前的透明度
+    else:
+        root.geometry("5x910+0+0")  # 将窗口大小改为 5x910
+        current_opacity = root.attributes("-alpha")  # 保存当前的透明度
+        root.attributes("-alpha", 0.1)  # 设置窗口透明度为 0.1
+    is_small = not is_small  # 切换窗口大小
+
 root = tk.Tk()
 root.title("demo")
-root.geometry("300x500")
-
+root.geometry("300x533+0+380")#设置窗口大小和位置
+root.attributes("-alpha", 0.5)  # 设置窗口透明度为 0.5
+root.overrideredirect(True)  # 隐藏窗口边框
 label = tk.Label(root, text="测试")
 label.pack(pady=20)
+
+# 绑定键盘按下事件
+root.bind("<F3>", change_weight)
 
 # 绑定鼠标右键点击事件
 root.bind("<Button-3>", change_opacity0)  # <Button-3> 表示鼠标右键
@@ -50,8 +66,9 @@ root.bind("<Button-3>", change_opacity0)  # <Button-3> 表示鼠标右键
 # 绑定滚轮事件
 root.bind("<Control-MouseWheel>", change_opacity)
 # 绑定关闭窗口事件
-root.bind("<F2>", close_window)
+root.bind("<Escape>", close_window)
 current_opacity = 0.5  # 初始透明度设置为 0.5
+is_small = False  # 初始窗口大小为 300x500
 keep_on_top()  # 启动保持最上层功能
 
 root.mainloop()
