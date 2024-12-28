@@ -6,6 +6,7 @@
 - 界面可以隐藏(F3)
 - 不同的透明度(右键0.2-0.5，CTRL+滚轮0.1-1)
 - 快捷退出按键（ESC）
+- [releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V1.0.0)中已有打包好的文件可直接使用
 
 # 时间日历
  - 2024.12.26 项目开始，创建代码仓库
