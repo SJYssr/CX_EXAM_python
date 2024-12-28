@@ -1,0 +1,67 @@
+切换omm用户
+su - omm
+  
+启动数据库
+gs_om -t start
+
+停止数据库
+gs_om -t stop
+
+登录postgres数据库
+gsql -d postgres -p 26000 -r
+
+登录student数据库
+gsql -d studentdb -h 192.168.100.91 -U student -p 26000 -W student@ustb2020 -r
+
+创建用户
+CREATE USER 用户名 IDENTIFIED BY 密码;
+
+赋予用户系统权限
+ALTER USER 用户名 SYSADMIN;
+
+创建数据库
+CREATE DATABASE 数据库名;
+
+删除用户
+DROP USER 用户名;
+
+删除数据库
+DROP DATABASE 数据库名;
+
+创建表
+CREATE TABLE 表名(参数1 数据类型, 参数2 数据类型, 参数3 数据类型....);
+
+表中插入数据
+INSERT INTO 表名(参数1 数据类型, 参数2 数据类型, 参数3 数据类型....) VALUES(值1, 值2, 值3.....);
+或者
+INSERT INTO 表名 VALUES(值1, 值2, 值3.....);
+
+查询表中数据
+SELECT * FROM 表名;
+  
+删除表
+DROP TABLE 表名;
+
+
+常见元命令：
+\l：列出数据库中所有的数据库，包括名称、所有者、字符集编码以及使用权限等。
+\d：列出当前数据库下所有的数据库对象，包括：表、视图和序列。如果后面跟有具体的表名或索引名，则显示该表或索引的详细信息。
+\db：列出所有可用的表空间。
+\dn：列出所有的模式（名称空间）。
+\du\dg：列出所有数据库角色。
+\dt：列出数据库中的表。
+\dt+:以扩展方式显示数据库中所有的表
+\di：列出所有的索引。
+\ds：列出所有的序列。
+\dv：列出所有的视图。
+\df：列出所有的函数
+\timing on\off：显示每条SQL语句的执行时间（以毫秒为单位）。
+\echo [string]：把字符串写到标准输出。
+\conninfo：查询当前连接的数据库的信息。
+\c 数据库：更换连接的数据库 
+\c – 用户名：切换用户。
+\h：获取SQL的帮助
+\?：获取gsql元命令的帮助
+\! Os_command 执行操作系统的命令（例如：\!ls -l）
+\i file.sql 执行sql语句
+\q：退出gsql。
