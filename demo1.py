@@ -49,13 +49,56 @@ def change_weight(event):
         root.attributes("-alpha", 0.1)  # 设置窗口透明度为 0.1
     is_small = not is_small  # 切换窗口大小
 
+def load_file_content():
+    """读取 tiku.txt 文件内容并插入到文本框中"""
+    try:
+        with open('tiku.txt', 'r', encoding='utf-8') as file:
+            content = file.read()
+            text_box.insert('1.0', content)
+    except FileNotFoundError:
+        text_box.insert('1.0', "未找到tiku.txt，请确保文件夹中有此文件")
+
+def highlight_search():
+    """高亮显示搜索框内容匹配的所有项"""
+    search_term = search_entry.get()
+    if search_term:
+        text_box.tag_remove('highlight', '1.0', 'end')
+        start = '1.0'
+        while True:
+            start = text_box.search(search_term, start, stopindex='end')
+            if not start:
+                break
+            end = f"{start}+{len(search_term)}c"
+            text_box.tag_add('highlight', start, end)
+            start = end
+        text_box.tag_config('highlight', background='yellow')
+
 root = tk.Tk()
 root.title("demo")
 root.geometry("300x533+0+380")#设置窗口大小和位置
 root.attributes("-alpha", 0.5)  # 设置窗口透明度为 0.5
 root.overrideredirect(True)  # 隐藏窗口边框
-label = tk.Label(root, text="测试")
-label.pack(pady=20)
+
+# 创建顶部框架用于放置搜索框和搜索按钮
+top_frame = tk.Frame(root)
+top_frame.pack(side="top", fill="x")
+
+search_entry = tk.Entry(top_frame)
+search_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+
+search_button = tk.Button(top_frame, text="搜索", command=highlight_search)
+search_button.pack(side="right", padx=5, pady=5)
+
+# 创建文本框和滚动条
+text_frame = tk.Frame(root)
+text_frame.pack(fill="both", expand=True)
+
+scrollbar = tk.Scrollbar(text_frame)
+scrollbar.pack(side="right", fill="y")
+
+text_box = tk.Text(text_frame, yscrollcommand=scrollbar.set)
+text_box.pack(side="left", fill="both", expand=True)
+scrollbar.config(command=text_box.yview)
 
 # 绑定键盘按下事件
 root.bind("<F3>", change_weight)
@@ -63,12 +106,15 @@ root.bind("<F3>", change_weight)
 # 绑定鼠标右键点击事件
 root.bind("<Button-3>", change_opacity0)  # <Button-3> 表示鼠标右键
 
-# 绑定滚轮事件
+# 绑定滚轮事件，仅当按下Ctrl键时生效
 root.bind("<Control-MouseWheel>", change_opacity)
 # 绑定关闭窗口事件
 root.bind("<Escape>", close_window)
 current_opacity = 0.5  # 初始透明度设置为 0.5
 is_small = False  # 初始窗口大小为 300x500
 keep_on_top()  # 启动保持最上层功能
+
+# 加载文件内容到文本框中
+load_file_content()
 
 root.mainloop()
