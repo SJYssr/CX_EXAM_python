@@ -1,5 +1,7 @@
 import tkinter as tk
 from ctypes import windll, wintypes, byref
+import time
+from pynput.keyboard import Controller
 
 # 定义 SetWindowDisplayAffinity 函数
 SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
@@ -73,6 +75,17 @@ def highlight_search():
             start = end
         text_box.tag_config('highlight', background='yellow')
 
+def text_input():
+    """输入功能"""
+    input_text = input_entry.get()
+    if not input_text:  # 如果输入框为空，则跳过此函数
+        return
+    keyboard = Controller()
+    time.sleep(5)
+    keyboard.type(input_text)
+    time.sleep(1)
+    input_entry.delete(0, tk.END)  # 清空输入框
+
 root = tk.Tk()
 root.title("demo")
 root.geometry("300x533+0+380")#设置窗口大小和位置
@@ -99,6 +112,19 @@ scrollbar.pack(side="right", fill="y")
 text_box = tk.Text(text_frame, yscrollcommand=scrollbar.set)
 text_box.pack(side="left", fill="both", expand=True)
 scrollbar.config(command=text_box.yview)
+
+# 使用 place 方法固定文本框的位置和大小
+text_box.place(x=0, y=0, width=285, height=455)
+
+# 创建底部框架用于放置输入框和输入按钮
+bottom_frame = tk.Frame(root)
+bottom_frame.pack(side="bottom", fill="x")
+
+input_entry = tk.Entry(bottom_frame)
+input_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+
+submit_button = tk.Button(bottom_frame, text="输入", command=text_input)
+submit_button.pack(side="right", padx=5, pady=5)
 
 # 绑定键盘按下事件
 root.bind("<F3>", change_weight)
