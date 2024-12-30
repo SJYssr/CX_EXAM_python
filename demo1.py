@@ -1,7 +1,9 @@
 import tkinter as tk
 from ctypes import windll, wintypes
 
-# 定义 SetWindowDisplayAffinity 函数
+from pynput.keyboard import Controller
+import time
+# 定义SetWindowDisplayAffinity函数
 SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
 SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
 SetWindowDisplayAffinity.restype = wintypes.BOOL
@@ -76,20 +78,32 @@ def highlight_search():
 
 def text_input():
     """输入功能"""
-    import time
-    from pynput.keyboard import Controller
-    keyboard = Controller()
     input_text = input_entry.get()
+    if not input_text:  # 如果输入框为空，则跳过此函数
+        return
+    keyboard = Controller()
     time.sleep(5)
     keyboard.type(input_text)
     time.sleep(1)
     input_entry.delete(0, 'end')  # 清空输入框
 
+def ai_text_input():
+    """AI输入功能"""
+    input_text = ai_input_entry.get()
+    if not input_text:  # 如果输入框为空，则跳过此函数
+        return
+    keyboard = Controller()
+    time.sleep(5)
+    keyboard.type(input_text)
+    time.sleep(1)
+    ai_input_entry.delete(0, 'end')  # 清空输入框
 def switch_to_ai_search():
     """切换到AI搜索界面"""
     main_frame.pack_forget()  # 隐藏主界面框架
     ai_frame.pack(fill="both", expand=True)  # 显示AI搜索界面框架
     search_frame.pack_forget()  # 隐藏搜索框架
+    ai_text_box.config(state='disabled')  # 禁止编辑AI回答文本框
+
 
 
 def switch_to_main():
@@ -100,8 +114,8 @@ def switch_to_main():
 
 
 def AI_ask():
+    ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
     if ai_text_box.get('1.0', 'end-1c'):  # 检查 ai_text_box 是否有内容
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
         ai_text_box.delete('1.0', 'end')  # 清空AI回答文本框
     """AI搜索调用的函数"""
     # 此处填写调用ai的主函数
@@ -111,13 +125,11 @@ def AI_ask():
     # ai_text_box.insert(tk.END, 此处填写具体的回答变量)  # 将AI回答插入到AI回答文本框中
     # ai_text_box.config(state=tk.DISABLED)  # 将文本框设置为不可编辑状态
 
-
-
-
 root = tk.Tk()
 root.title("demo")
 root.geometry("300x533+0+380")#设置窗口大小和位置
 root.attributes("-alpha", 0.5)  # 设置窗口透明度为 0.5
+root.configure(bg='white')  # 设置窗口背景颜色为白色
 root.overrideredirect(True)  # 隐藏窗口边框
 
 # 创建顶部框架用于放置搜索框和搜索按钮（主界面）
@@ -126,12 +138,15 @@ search_frame.pack(side="top", fill="x")
 
 search_entry = tk.Entry(search_frame)
 search_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+search_entry.configure(foreground='gray')
 
 ai_button = tk.Button(search_frame, text="AI", command=switch_to_ai_search)
 ai_button.pack(side="right", padx=5, pady=5)
+ai_button.configure(foreground='gray')
 
 search_button = tk.Button(search_frame, text="搜索", command=highlight_search)
 search_button.pack(side="right", padx=5, pady=5)
+search_button.configure(foreground='gray')
 
 # 创建主界面框架和文本框、滚动条（主界面）
 main_frame = tk.Frame(root)
@@ -145,6 +160,7 @@ scrollbar.pack(side="right", fill="y")
 
 text_box = tk.Text(text_frame, yscrollcommand=scrollbar.set)
 text_box.pack(side="left", fill="both", expand=True)
+text_box.configure(foreground='gray')
 scrollbar.config(command=text_box.yview)
 
 # 创建底部框架用于放置输入框和输入按钮（主界面）
@@ -153,9 +169,11 @@ bottom_frame.pack(side="bottom", fill="x")
 
 input_entry = tk.Entry(bottom_frame)
 input_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+input_entry.configure(foreground='gray')
 
 submit_button = tk.Button(bottom_frame, text="输入", command=text_input)
 submit_button.pack(side="right", padx=5, pady=5)
+submit_button.configure(foreground='gray')
 
 # 创建顶部框架用于放置搜索框和搜索按钮（AI搜索界面）
 ai_frame = tk.Frame(root)
@@ -164,12 +182,15 @@ ai_search_frame.pack(side="top", fill="x")
 
 ai_search_entry = tk.Entry(ai_search_frame)
 ai_search_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+ai_search_entry.configure(foreground='gray')
 
 back_button = tk.Button(ai_search_frame, text="返回", command=switch_to_main)
 back_button.pack(side="right", padx=5, pady=5)
+back_button.configure(foreground='gray')
 
-ai_search_button = tk.Button(ai_search_frame, text="AI搜索", command=lambda: AI_ask())
+ai_search_button = tk.Button(ai_search_frame, text="AI搜索", command=AI_ask)
 ai_search_button.pack(side="right", padx=5, pady=5)
+ai_search_button.configure(foreground='gray')
 
 # 创建底部框架用于放置输入框和输入按钮（AI搜索界面）
 ai_bottom_frame = tk.Frame(ai_frame)
@@ -177,13 +198,16 @@ ai_bottom_frame.pack(side="bottom", fill="x")
 
 ai_input_entry = tk.Entry(ai_bottom_frame)
 ai_input_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+ai_input_entry.configure(foreground='gray')
 
-ai_submit_button = tk.Button(ai_bottom_frame, text="输入" )
+ai_submit_button = tk.Button(ai_bottom_frame, text="输入", command=ai_text_input)
 ai_submit_button.pack(side="right", padx=5, pady=5)
+ai_submit_button.configure(foreground='gray')
 
 # 创建AI搜索界面的文本框用于显示AI的回答
 ai_text_box = tk.Text(ai_frame, wrap="word")
 ai_text_box.pack(fill="both", expand=True)
+ai_text_box.configure(foreground='gray')
 
 # 绑定键盘按下事件
 root.bind("<F3>", change_weight)
