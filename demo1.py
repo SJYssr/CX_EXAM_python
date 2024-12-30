@@ -78,6 +78,7 @@ def load_file_content():
             text_box.config(state='disabled')  # 状态为不可编辑
     except FileNotFoundError:
         text_box.insert('1.0', "未找到tiku.txt，请确保文件夹中有此文件")
+        text_box.config(state='disabled')  # 状态为不可编辑
 
 def highlight_search():
     """高亮显示文本框中所有匹配搜索框内容项"""
