@@ -7,7 +7,7 @@
 - 界面可以隐藏(F3)
 - 不同的透明度(右键0.2-0.5，CTRL+滚轮0.1-1)
 - 快捷退出按键（ESC）
-- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.0)中已有打包好的文件可直接使用
+- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.1)中已有打包好的文件可直接使用
 - 如果感觉有用的话请给我一颗小星星
 
 ## 时间日历
