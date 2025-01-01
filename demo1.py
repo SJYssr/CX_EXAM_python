@@ -128,24 +128,22 @@ def switch_to_main():
 
 def change_text_size(event):
     """调整文本框内字体大小"""
-    global text_box_size
-    global ai_text_box_size
+    global text_size
+    text_size = max(10, min(text_size, 12))  # 限制字体大小在1到12之间
     if main_frame.winfo_ismapped():
-        """调整题库文本框大小"""
+        """调整题库文本大小"""
         if event.delta > 0:  # 滚轮向上滚动
-            text_box_size += 1
+            text_size += 1
         else:  # 滚轮向下滚动
-            text_box_size -= 1
-        text_box_size = max(1, min(text_box_size, 100)) # 限制字体大小在1到100之间
-        text_box.config(font=("Arial", text_box_size))
+            text_size -= 1
+        text_box.config(font=("Arial", text_size))
     elif ai_search_frame.winfo_ismapped():
-        """调整AI回答文本框大小"""
+        """调整AI回答文本大小"""
         if event.delta > 0:  # 滚轮向上滚动
-            ai_text_box_size += 1
+            text_size += 1
         else:  # 滚轮向下滚动
-            ai_text_box_size -= 1
-        text_box_size = max(1, min(text_box_size, 100)) # 限制字体大小在1到100之间
-        ai_text_box.config(font=("Arial", ai_text_box_size))
+            text_size -= 1
+        ai_text_box.config(font=("Arial", text_size))
 
 def AI_ask(appid="1b69309b",
          api_secret="YWY0MWJhNTM4MGU3NTJkZDJiMDM0ZjZl",
@@ -378,8 +376,7 @@ root.bind("<Alt-MouseWheel>", change_text_size)
 # 绑定关闭窗口事件
 root.bind("<Escape>", close_window)
 current_opacity = 0.5  # 初始透明度设置为 0.5
-text_box_size = 10  # 初始题库文字大小为 10
-ai_text_box_size = 10  # 初始AI文字大小为 10
+text_size = 10  # 初始文字大小为 10
 is_small = False  # 初始窗口大小为 300x500
 keep_on_top()  # 启动保持最上层功能
 # 加载文件内容到文本框中
