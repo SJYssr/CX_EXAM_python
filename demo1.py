@@ -4,7 +4,6 @@ from ctypes import windll, wintypes
 from pynput.keyboard import Controller
 
 import _thread as thread
-
 import time
 import base64
 import datetime
@@ -17,9 +16,7 @@ from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
-
 import websocket
-
 
 # 定义 SetWindowDisplayAffinity 函数
 SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
@@ -35,7 +32,7 @@ def keep_on_top():
     root.after(1000, keep_on_top)  # 每秒钟检查一次
 
 def change_opacity(event):
-    """改变窗口透明度"""
+    """CTRL+滚轮改变窗口透明度"""
     global current_opacity
     if event.delta > 0:  # 滚轮向上滚动
         current_opacity += 0.1
@@ -45,7 +42,7 @@ def change_opacity(event):
     root.attributes("-alpha", current_opacity)
 
 def change_opacity0(event):
-    """改变窗口透明度0.2/0.5"""
+    """右键改变窗口透明度0.2/0.5"""
     global current_opacity
     if current_opacity == 0.2:
         current_opacity = 0.5
@@ -96,7 +93,7 @@ def highlight_search():
         text_box.tag_config('highlight', background='yellow')
 
 def text_input():
-    """输入功能"""
+    """主界面输入功能"""
     input_text = input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
@@ -107,7 +104,7 @@ def text_input():
     input_entry.delete(0, 'end')  # 清空输入框
 
 def ai_text_input():
-    """AI输入功能"""
+    """AI界面输入功能"""
     input_text = ai_input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
@@ -123,14 +120,32 @@ def switch_to_ai_search():
     search_frame.pack_forget()  # 隐藏搜索框架
     ai_text_box.config(state='disabled')  # 禁止编辑AI回答文本框
 
-
-
 def switch_to_main():
     """切换回主界面"""
     ai_frame.pack_forget()  # 隐藏AI搜索界面框架
     search_frame.pack(side="top", fill="x")  # 显示搜索框架
     main_frame.pack(fill="both", expand=True)  # 显示主界面框架
 
+def change_text_size(event):
+    """调整文本框内字体大小"""
+    global text_box_size
+    global ai_text_box_size
+    if main_frame.winfo_ismapped():
+        """调整题库文本框大小"""
+        if event.delta > 0:  # 滚轮向上滚动
+            text_box_size += 1
+        else:  # 滚轮向下滚动
+            text_box_size -= 1
+        text_box_size = max(1, min(text_box_size, 100)) # 限制字体大小在1到100之间
+        text_box.config(font=("Arial", text_box_size))
+    elif ai_search_frame.winfo_ismapped():
+        """调整AI回答文本框大小"""
+        if event.delta > 0:  # 滚轮向上滚动
+            ai_text_box_size += 1
+        else:  # 滚轮向下滚动
+            ai_text_box_size -= 1
+        text_box_size = max(1, min(text_box_size, 100)) # 限制字体大小在1到100之间
+        ai_text_box.config(font=("Arial", ai_text_box_size))
 
 def AI_ask(appid="1b69309b",
          api_secret="YWY0MWJhNTM4MGU3NTJkZDJiMDM0ZjZl",
@@ -271,6 +286,7 @@ def gen_params(appid, query, domain):
     }
     return data
 
+# 界面部件
 root = tk.Tk()
 root.title("demo")
 root.geometry("300x533+0+380")#设置窗口大小和位置
@@ -357,9 +373,13 @@ root.bind("<F3>", change_weight)
 root.bind("<Button-3>", change_opacity0)  # <Button-3> 表示鼠标右键
 # 绑定滚轮事件，仅当按下Ctrl键时生效
 root.bind("<Control-MouseWheel>", change_opacity)
+# 绑定滚轮事件，仅当按下ALT键时生效
+root.bind("<Alt-MouseWheel>", change_text_size)
 # 绑定关闭窗口事件
 root.bind("<Escape>", close_window)
 current_opacity = 0.5  # 初始透明度设置为 0.5
+text_box_size = 10  # 初始题库文字大小为 10
+ai_text_box_size = 10  # 初始AI文字大小为 10
 is_small = False  # 初始窗口大小为 300x500
 keep_on_top()  # 启动保持最上层功能
 # 加载文件内容到文本框中
