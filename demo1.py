@@ -33,22 +33,28 @@ def keep_on_top():
 
 def change_opacity(event):
     """CTRL+滚轮改变窗口透明度"""
-    global current_opacity
-    if event.delta > 0:  # 滚轮向上滚动
-        current_opacity += 0.1
-    else:  # 滚轮向下滚动
-        current_opacity -= 0.1
-    current_opacity = max(0.1, min(current_opacity, 1.0))  # 限制透明度在 0.1 到 1.0 之间
-    root.attributes("-alpha", current_opacity)
+    global current_opacity,is_small
+    if is_small != False:
+        return
+    else:
+        if event.delta > 0:  # 滚轮向上滚动
+            current_opacity += 0.1
+        else:  # 滚轮向下滚动
+            current_opacity -= 0.1
+        current_opacity = max(0.1, min(current_opacity, 1.0))  # 限制透明度在 0.1 到 1.0 之间
+        root.attributes("-alpha", current_opacity)
 
 def change_opacity0(event):
     """右键改变窗口透明度0.2/0.5"""
-    global current_opacity
-    if current_opacity == 0.2:
-        current_opacity = 0.5
+    global current_opacity,is_small
+    if is_small != False:
+        return
     else:
-        current_opacity = 0.2
-    root.attributes("-alpha", current_opacity)
+        if current_opacity == 0.2:
+            current_opacity = 0.5
+        else:
+            current_opacity = 0.2
+        root.attributes("-alpha", current_opacity)
 
 def close_window(event):
     """关闭窗口"""
