@@ -18,13 +18,13 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 import websocket
 
-# 定义 SetWindowDisplayAffinity 函数
-SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
-SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
-SetWindowDisplayAffinity.restype = wintypes.BOOL
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
+    # 定义 SetWindowDisplayAffinity 函数
+    SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
+    SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
+    SetWindowDisplayAffinity.restype = wintypes.BOOL
     root.attributes("-topmost", True)
     hwnd = windll.user32.GetForegroundWindow()
     dwAffinity = 0x00000011  # 设置显示亲和性为 0x00000011
