@@ -28,7 +28,7 @@
 ## 注:
 - AI逻辑代码在AI_ask函数中
 - 如果选择讯飞星火AI,appid、api_key、api_secret需要自行申请([申请地址](https://aiui.xfyun.cn/console))
-- 预留的ai可直接使用
+- 预留的ai可直接使用(建议换成自己的)
 - 如果选择其他AI请自行修改代码
 - 关于隐藏(F3)时将窗口透明度降到最低，将窗口拉成细条放置在左边框
 - 输入法仍然会被录屏/截屏，能力有限无法解决，如果有大佬可以解决,可以在[issues](https://github.com/SJYssr/CX_EXAM_python/issues/1)留言
