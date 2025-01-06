@@ -27,7 +27,7 @@ def keep_on_top():
     SetWindowDisplayAffinity.restype = wintypes.BOOL
     root.attributes("-topmost", True)
     hwnd = windll.user32.GetForegroundWindow()
-    dwAffinity = 0x00000011  # 设置显示亲和性为 0x00000011
+    dwAffinity = 0x0000001  # 设置显示亲和性为 0x0000001
     SetWindowDisplayAffinity(hwnd, dwAffinity)
     root.after(1000, keep_on_top)  # 每秒钟检查一次
 
@@ -150,6 +150,14 @@ def change_text_size(event):
         else:  # 滚轮向下滚动
             text_size -= 1
         ai_text_box.config(font=("Arial", text_size))
+
+def start_move(event):
+    global x, y
+    x = event.x
+    y = event.y
+
+def stop_move(event):
+    root.geometry(f"+{event.x_root - x}+{event.y_root - y}")
 
 def AI_ask(appid="1b69309b",
          api_secret="YWY0MWJhNTM4MGU3NTJkZDJiMDM0ZjZl",
@@ -371,6 +379,10 @@ ai_submit_button = tk.Button(ai_bottom_frame, text="输入", command=ai_text_inp
 ai_submit_button.pack(side="right", padx=5, pady=5)
 ai_submit_button.configure(foreground='gray')
 
+
+# 绑定鼠标事件
+root.bind("<Button-1>", start_move)
+root.bind("<B1-Motion>", stop_move)
 # 绑定键盘按下事件
 root.bind("<F3>", change_weight)
 # 绑定鼠标右键点击事件
