@@ -27,6 +27,7 @@
  - 2025.1.7 添加config文件，修改ai功能更加方便
 
 ## 注:
+## 请确保运行目录下有tiku.txt和config.ini文件
 - AI逻辑代码在AI_ask函数中
 - 如果选择讯飞星火AI,appid、api_key、api_secret需要自行申请([申请地址](https://aiui.xfyun.cn/console))
 - 预留的ai可直接使用(建议换成自己的)
