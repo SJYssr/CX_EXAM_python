@@ -388,8 +388,9 @@ ai_submit_button.configure(foreground='gray')
 
 
 # 绑定鼠标事件
-root.bind("<Button-1>", start_move)
-root.bind("<B1-Motion>", stop_move)
+# 绑定鼠标事件
+root.bind("<Control-Button-1>", start_move)
+root.bind("<Control-B1-Motion>", stop_move)
 # 绑定键盘按下事件
 root.bind("<F3>", change_weight)
 # 绑定鼠标右键点击事件
