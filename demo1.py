@@ -18,6 +18,7 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 import websocket
 
+import configparser
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
