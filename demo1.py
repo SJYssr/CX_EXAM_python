@@ -308,7 +308,6 @@ domain = config.get('SPARK', 'domain')
 
 # 界面部件
 root = tk.Tk()
-root.title("demo")
 root.geometry("300x533+0+380")#设置窗口大小和位置
 root.attributes("-alpha", 0.5)  # 设置窗口透明度为 0.5
 root.configure(bg='white')  # 设置窗口背景颜色为白色
