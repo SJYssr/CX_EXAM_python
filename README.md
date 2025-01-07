@@ -7,7 +7,7 @@
 - 界面可以隐藏(F3)
 - 不同的透明度(右键0.2-0.5，CTRL+滚轮0.1-1)
 - 快捷退出按键（ESC）除ESC键外任何F1-F12键都可以在霸屏软件中退出此程序(需要自行更改代码)
-- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.3)中已有打包好的文件可直接使用
+- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.4)中已有打包好的文件可直接使用
 - 如果感觉有用的话请给我颗小星星
 
 ## 时间日历
@@ -24,7 +24,7 @@
  - 祝大家元旦快乐
  - 2025.1.1 添加ALT+滚轮调整字体大小功能
  - 2025.1.6 添加窗口可以移动
-
+ - 2025.1.7 添加config文件，修改ai功能更加方便
 
 ## 注:
 - AI逻辑代码在AI_ask函数中
