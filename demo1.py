@@ -160,19 +160,7 @@ def start_move(event):
 def stop_move(event):
     root.geometry(f"+{event.x_root - x}+{event.y_root - y}")
 
-def AI_ask(
-        # appid、api_secret、api_key三个服务认证信息请前往开放平台控制台查看（https://console.xfyun.cn/services/bm35）
-
-        # Spark_url="wss://spark-api.xf-yun.com/v3.5/chat",   # Max环境的地址
-		# Spark_url = "wss://spark-api.xf-yun.com/v4.0/chat"  # 4.0Ultra环境的地址
-        # Spark_url = "wss://spark-api.xf-yun.com/v3.1/chat"  # Pro环境的地址
-        # Spark_url = "wss://spark-api.xf-yun.com/v1.1/chat"  # Lite环境的地址
-
-        # domain="generalv3.5",   # Max版本
-		# domain = "4.0Ultra"     # 4.0Ultra 版本
-        # domain = "generalv3"    # Pro版本
-        # domain = "lite"         # Lite版本址
-        ):
+def AI_ask():
     global appid,api_secret,api_key,Spark_url,domain
     """AI搜索调用的函数"""
     if ai_text_box.get('1.0', 'end-1c'):  # 检查 ai_text_box 是否有内容
