@@ -374,8 +374,6 @@ ai_submit_button = tk.Button(ai_bottom_frame, text="输入", command=ai_text_inp
 ai_submit_button.pack(side="right", padx=5, pady=5)
 ai_submit_button.configure(foreground='gray')
 
-
-# 绑定鼠标事件
 # 绑定鼠标事件
 root.bind("<Control-Button-1>", start_move)
 root.bind("<Control-B1-Motion>", stop_move)
