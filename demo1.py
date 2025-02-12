@@ -1,6 +1,8 @@
 import tkinter as tk
 from ctypes import windll, wintypes
+from tkinter import messagebox
 
+import requests
 from pynput.keyboard import Controller
 
 import _thread as thread
@@ -24,6 +26,25 @@ import configparser
 SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
 SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
 SetWindowDisplayAffinity.restype = wintypes.BOOL
+
+config = configparser.ConfigParser()
+config.read('config.ini', encoding='utf-8')
+type = config.get('AI_set', 'type')
+type = int(type)
+if type == 0:
+    messagebox.showerror("AI设置", "当前未设置AI")
+elif type == 1:
+    messagebox.showerror("AI设置", "正在使用SparkAI")
+    appid = config.get('SPARK', 'appid')
+    api_secret = config.get('SPARK', 'api_secret')
+    api_key = config.get('SPARK', 'api_key')
+    Spark_url = config.get('SPARK', 'Spark_url')
+    domain = config.get('SPARK', 'domain')
+elif type == 2:
+    messagebox.showerror("AI设置", "正在使用DeepseekAI")
+    deepseek_api_key = config.get('deepseek', 'api_key')
+else:
+    messagebox.showerror("AI设置", "请检查config.ini文件中的AI_set配置项")
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
@@ -161,23 +182,49 @@ def start_move(event):
 def stop_move(event):
     root.geometry(f"+{event.x_root - x}+{event.y_root - y}")
 
+
 def AI_ask():
-    global appid,api_secret,api_key,Spark_url,domain
     """AI搜索调用的函数"""
+    global type
     if ai_text_box.get('1.0', 'end-1c'):  # 检查 ai_text_box 是否有内容
         ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
         ai_text_box.delete('1.0', 'end')  # 清空AI回答文本框
-    wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
-    websocket.enableTrace(False)
-    wsUrl = wsParam.create_url()
-    query = ai_search_entry.get()
-    ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
-    ws.appid = appid
-    ws.query = query
-    ws.domain = domain
-    ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-
-
+    if type == 0:
+        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
+        ai_text_box.insert(tk.END, "当前未设置AI类型")
+        ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
+        return
+    # 讯飞星火--------------------------------------------------------
+    elif type == 1:
+        global appid,api_secret,api_key,Spark_url,domain
+        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
+        wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
+        websocket.enableTrace(False)
+        wsUrl = wsParam.create_url()
+        query = ai_search_entry.get()
+        ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
+        ws.appid = appid
+        ws.query = query
+        ws.domain = domain
+        ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+    # DeepSeek--------------------------------------------------------
+    elif type == 2:
+        global deepseek_api_key
+        user_input = ai_search_entry.get()
+        result = call_deepseek_api(deepseek_api_key, user_input)
+        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
+        if isinstance(result, Exception):
+            # 异常处理分支
+            if isinstance(result, requests.exceptions.HTTPError):
+                ai_text_box.insert(tk.END, f"HTTP错误: {result.response.status_code}\n")
+            ai_text_box.insert(tk.END, f"[ERROR] 请求失败: {str(result)}")
+        else:
+            # 正常结果分支
+            ai_text_box.insert(tk.END, f"DeepSeek Response: {result}")
+    else:
+        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
+        ai_text_box.insert(tk.END, "AI类型设置错误")
+    ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
 class Ws_Param(object):
     # 初始化
     def __init__(self, APPID, APIKey, APISecret, gpt_url):
@@ -219,28 +266,18 @@ class Ws_Param(object):
         url = self.gpt_url + '?' + urlencode(v)
         # 此处打印出建立连接时候的url,参考本demo的时候可取消上方打印的注释，比对相同参数时生成的url与自己代码生成的url是否一致
         return url
-
-
 # 收到websocket错误的处理
 def on_error(ws, error):
     ai_text_box.insert('1.0', error)
-
-
 # 收到websocket关闭的处理
 def on_close(ws):
     ai_text_box.insert('1.0', '##连接已关闭##')
-
-
 # 收到websocket连接建立的处理
 def on_open(ws):
     thread.start_new_thread(run, (ws,))
-
-
 def run(ws, *args):
     data = json.dumps(gen_params(appid=ws.appid, query=ws.query, domain=ws.domain))
     ws.send(data)
-
-
 # 收到websocket消息的处理
 def on_message(ws, message):
     data = json.loads(message)
@@ -257,9 +294,6 @@ def on_message(ws, message):
         if status == 2:
             ws.close()
     ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
-
-
-
 def gen_params(appid, query, domain):
     """
     通过appid和用户的提问来生成请参数
@@ -286,14 +320,36 @@ def gen_params(appid, query, domain):
         }
     }
     return data
+#deepseek消息处理
+def call_deepseek_api(deepseek_api_key, prompt):
+    url = "https://api.deepseek.com/v1/chat/completions"  # 请根据实际API文档替换URL
+    headers = {
+        "Authorization": f"Bearer {deepseek_api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "deepseek-chat",  # 根据实际模型名修改
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.7
+    }
 
-config = configparser.ConfigParser()
-config.read('config.ini', encoding='utf-8')
-appid = config.get('SPARK', 'appid')
-api_secret = config.get('SPARK', 'api_secret')
-api_key = config.get('SPARK', 'api_key')
-Spark_url = config.get('SPARK', 'Spark_url')
-domain = config.get('SPARK', 'domain')
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()  # 自动触发HTTP错误
+        return response.json()['choices'][0]['message']['content']
+
+    except requests.exceptions.RequestException as e:
+        # 返回网络/HTTP相关异常
+        return e
+    except KeyError as e:
+        # 返回JSON解析错误
+        return e
+    except Exception as e:
+        # 捕获其他未知异常
+        return e
+#--------------------------------------------------------
 
 # 界面部件
 root = tk.Tk()
