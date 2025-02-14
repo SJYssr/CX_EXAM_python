@@ -32,19 +32,19 @@ config.read('config.ini', encoding='utf-8')
 type = config.get('AI_set', 'type')
 type = int(type)
 if type == 0:
-    messagebox.showerror("AI设置", "当前未设置AI")
+    messagebox.showinfo("AI设置", "当前未设置AI")
 elif type == 1:
-    messagebox.showerror("AI设置", "正在使用SparkAI")
+    messagebox.showinfo("AI设置", "正在使用SparkAI")
     appid = config.get('SPARK', 'appid')
     api_secret = config.get('SPARK', 'api_secret')
     api_key = config.get('SPARK', 'api_key')
     Spark_url = config.get('SPARK', 'Spark_url')
     domain = config.get('SPARK', 'domain')
 elif type == 2:
-    messagebox.showerror("AI设置", "正在使用DeepseekAI")
+    messagebox.showinfo("AI设置", "正在使用DeepseekAI")
     deepseek_api_key = config.get('deepseek', 'api_key')
 else:
-    messagebox.showerror("AI设置", "请检查config.ini文件中的AI_set配置项")
+    messagebox.showinfo("AI设置", "请检查config.ini文件中的AI_set配置项")
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
@@ -182,7 +182,6 @@ def start_move(event):
 def stop_move(event):
     root.geometry(f"+{event.x_root - x}+{event.y_root - y}")
 
-
 def AI_ask():
     """AI搜索调用的函数"""
     global type
@@ -220,11 +219,12 @@ def AI_ask():
             ai_text_box.insert(tk.END, f"[ERROR] 请求失败: {str(result)}")
         else:
             # 正常结果分支
-            ai_text_box.insert(tk.END, f"DeepSeek Response: {result}")
+            ai_text_box.insert(tk.END, f"DeepSeek : {result}")
     else:
         ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
         ai_text_box.insert(tk.END, "AI类型设置错误")
     ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
+# Spark消息处理--------------------------------------------
 class Ws_Param(object):
     # 初始化
     def __init__(self, APPID, APIKey, APISecret, gpt_url):
