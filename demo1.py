@@ -29,19 +29,12 @@ class FileNotFoundError(Exception):
 def jian_cha_wen_jian():
     # 定义配置文件名
     config_name = "config.ini"
-    # 定义题库文件名
-    tiku_name = "tiku.txt"
     # 获取当前工作目录
     currect_dir = os.getcwd()
     # 检查当前目录下是否存在config.ini文件
     if config_name not in os.listdir(currect_dir):
         # 如果不存在，抛出文件未找到异常
         raise FileNotFoundError("缺少config.ini文件，请检查")
-    else:
-        # 如果存在，继续检查当前目录下是否存在tiku.txt文件
-        if tiku_name not in os.listdir(currect_dir):
-            # 如果不存在，抛出文件未找到异常
-            raise FileNotFoundError("缺少tiku.txt文件，请检查")
 try:
     jian_cha_wen_jian()
 except FileNotFoundError as e:
