@@ -7,6 +7,8 @@
 - 界面可以隐藏(F3)
 - 不同的透明度(右键0.2-0.5，CTRL+滚轮0.1-1)
 - 快捷退出按键（ESC）除ESC键外任何F1-F12键都可以在霸屏软件中退出此程序(需要自行更改代码)
+- 题库搜题功能，tiku.txt文件中输入题库，程序启动后会自动读取题库中的内容，可以搜索题库中的关键字
+- AI搜题功能，使用[讯飞星火](https://aiui.xfyun.cn/console),[Deepseek](https://www.deepseek.com)
 - 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.4)中已有打包好的文件可直接使用
 - 如果感觉有用的话请给我颗小星星
 
@@ -26,6 +28,8 @@
  - 2025.1.6 添加窗口可以移动(CTRL+鼠标左键)
  - 2025.1.7 添加config文件，修改ai功能更加方便
  - 2025.2.13 添加新的AI（deepseek）
+ - 2025.2.25 添加前置的文件查找功能
+ - 2025.2.25 为代码添加详细的注释
 
 ## 注:
 ## 请确保运行目录下有tiku.txt和config.ini文件
