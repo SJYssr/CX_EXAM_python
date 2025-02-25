@@ -67,15 +67,22 @@ else:
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
+    # 设置窗口属性，使其始终保持在最上层
     root.attributes("-topmost", True)
+    # 获取当前处于前台的窗口句柄
     hwnd = windll.user32.GetForegroundWindow()
+    # 设置显示亲和性为 0x0000001，表示窗口将始终显示在所有其他窗口之上
     dwAffinity = 0x0000001  # 设置显示亲和性为 0x0000001
+    # 调用 SetWindowDisplayAffinity 函数，将窗口的显示亲和性设置为 dwAffinity
     SetWindowDisplayAffinity(hwnd, dwAffinity)
+    # 每秒钟（1000毫秒）调用一次 keep_on_top 函数，以确保窗口始终在最上层
     root.after(1000, keep_on_top)  # 每秒钟检查一次
 
 def change_opacity(event):
     """CTRL+滚轮改变窗口透明度"""
+    # 声明全局变量 current_opacity 和 is_small，以便在函数内部修改它们
     global current_opacity,is_small
+    # 如果窗口处于小窗口模式（is_small 为 True），则不执行任何操作
     if is_small != False:
         return
     else:
@@ -88,9 +95,15 @@ def change_opacity(event):
 
 def change_opacity0(event):
     """右键改变窗口透明度0.2/0.5"""
+    # 声明全局变量current_opacity和is_small，以便在函数内部修改它们
     global current_opacity,is_small
+    # 检查窗口是否处于小窗口模式，如果是则直接返回，不执行后续操作
     if is_small != False:
         return
+    # 如果当前透明度是0.2，则将其改为0.5
+    if current_opacity == 0.2:
+        current_opacity = 0.5
+    # 否则，将透明度改为0.2
     else:
         if current_opacity == 0.2:
             current_opacity = 0.5
@@ -104,11 +117,11 @@ def close_window(event):
 
 def change_weight(event):
     """键盘按下事件处理函数"""
-    global is_small, current_opacity
-    if is_small:
+    global is_small, current_opacity  # 声明全局变量 is_small 和 current_opacity
+    if is_small:  # 如果当前窗口是小的
         root.geometry("300x533+0+380")  # 将窗口大小改为 300x533
         root.attributes("-alpha", current_opacity)  # 设置窗口透明度为之前的透明度
-    else:
+    else:  # 如果当前窗口是大的
         root.geometry("5x910+0+0")  # 将窗口大小改为 5x910
         current_opacity = root.attributes("-alpha")  # 保存当前的透明度
         root.attributes("-alpha", 0.1)  # 设置窗口透明度为 0.1
@@ -117,31 +130,50 @@ def change_weight(event):
 def load_file_content():
     """读取 tiku.txt 文件内容到文本框中"""
     try:
+        # 尝试以只读模式打开名为 'tiku.txt' 的文件，并指定编码为 'utf-8'
         with open('tiku.txt', 'r', encoding='utf-8') as file:
+            # 读取文件的全部内容
             content = file.read()
+            # 将读取的内容插入到文本框的起始位置（'1.0' 表示第一行第一列）
             text_box.insert('1.0', content)
+            # 设置文本框为不可编辑状态
             text_box.config(state='disabled')  # 状态为不可编辑
     except FileNotFoundError:
+        # 如果文件未找到，捕获 FileNotFoundError 异常
+        # 在文本框中插入提示信息
         text_box.insert('1.0', "未找到tiku.txt，请确保文件夹中有此文件")
+        # 设置文本框为不可编辑状态
         text_box.config(state='disabled')  # 状态为不可编辑
 
 def highlight_search():
     """高亮显示文本框中所有匹配搜索框内容项"""
+    # 获取搜索框中的搜索词
     search_term = search_entry.get()
+    # 如果搜索词不为空
     if search_term:
+        # 移除文本框中已有的高亮标记
         text_box.tag_remove('highlight', '1.0', 'end')
+        # 初始化搜索的起始位置为文本框的开始位置
         start = '1.0'
+        # 循环搜索文本框中的匹配项
         while True:
+            # 从当前起始位置开始搜索搜索词，直到文本框的末尾
             start = text_box.search(search_term, start, stopindex='end')
+            # 如果没有找到匹配项，退出循环
             if not start:
                 break
+            # 计算匹配项的结束位置
             end = f"{start}+{len(search_term)}c"
+            # 在文本框中添加高亮标记，从起始位置到结束位置
             text_box.tag_add('highlight', start, end)
+            # 更新起始位置为当前匹配项的结束位置，继续搜索下一个匹配项
             start = end
+        # 配置高亮标记的样式，背景色设置为黄色
         text_box.tag_config('highlight', background='yellow')
 
 def text_input():
     """主界面输入功能"""
+    # 获取输入框中的文本
     input_text = input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
@@ -153,6 +185,7 @@ def text_input():
 
 def ai_text_input():
     """AI界面输入功能"""
+    # 从输入框获取用户输入的文本
     input_text = ai_input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
