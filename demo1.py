@@ -62,6 +62,7 @@ elif type == 1:
 elif type == 2:
     messagebox.showinfo("AI设置", "正在使用DeepseekAI")
     deepseek_api_key = config.get('deepseek', 'api_key')
+    deepseek_model = config.get('deepseek', 'model')
 else:
     messagebox.showinfo("AI设置", "请检查config.ini文件中的AI_set配置项")
 
@@ -374,13 +375,14 @@ def gen_params(appid, query, domain):
     return data
 #deepseek消息处理
 def call_deepseek_api(deepseek_api_key, prompt):
+    global deepseek_model
     url = "https://api.deepseek.com/v1/chat/completions"  # 请根据实际API文档替换URL
     headers = {
         "Authorization": f"Bearer {deepseek_api_key}",
         "Content-Type": "application/json"
     }
     data = {
-        "model": "deepseek-chat",  # 根据实际模型名修改
+        "model": f"{deepseek_model}",  # 根据实际模型名修改
         "messages": [
             {"role": "user", "content": prompt}
         ],
