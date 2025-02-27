@@ -237,47 +237,44 @@ def stop_move(event):
 
 def AI_ask():
     """AI搜索调用的函数"""
-    global type
-    if ai_text_box.get('1.0', 'end-1c'):  # 检查 ai_text_box 是否有内容
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        ai_text_box.delete('1.0', 'end')  # 清空AI回答文本框
-    if type == 0:
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        ai_text_box.insert(tk.END, "当前未设置AI类型")
-        ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
-        return
-    # 讯飞星火--------------------------------------------------------
-    elif type == 1:
-        global appid,api_secret,api_key,Spark_url,domain
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
-        websocket.enableTrace(False)
-        wsUrl = wsParam.create_url()
-        query = ai_search_entry.get()
-        ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
-        ws.appid = appid
-        ws.query = query
-        ws.domain = domain
-        ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-    # DeepSeek--------------------------------------------------------
-    elif type == 2:
-        global deepseek_api_key
-        user_input = ai_search_entry.get()
-        result = call_deepseek_api(deepseek_api_key, user_input)
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        if isinstance(result, Exception):
-            # 异常处理分支
-            if isinstance(result, requests.exceptions.HTTPError):
-                ai_text_box.insert(tk.END, f"HTTP错误: {result.response.status_code}\n")
-            ai_text_box.insert(tk.END, f"[ERROR] 请求失败: {str(result)}")
-        else:
-            # 正常结果分支
-            ai_text_box.insert(tk.END, f"DeepSeek : {result}")
+    ai_search_button.config(state='disabled')
+    ai_text_box.config(state='normal')
+    ai_text_box.delete('1.0', tk.END)
+    if type == 1:
+        ai_text_box.config(state='disabled')
     else:
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        ai_text_box.insert(tk.END, "AI类型设置错误")
-    ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
+        ai_text_box.insert(tk.END, "正在思考中，请稍候...")
+        ai_text_box.config(state='disabled')
+
+    def run_ai():
+        try:
+            if type == 1:
+                wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
+                websocket.enableTrace(False)
+                wsUrl = wsParam.create_url()
+                query = ai_search_entry.get()
+                ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close,
+                                            on_open=on_open)
+                ws.appid = appid
+                ws.query = query
+                ws.domain = domain
+                ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+            elif type == 2:
+                response = call_deepseek_api(deepseek_api_key, ai_search_entry.get())
+                root.after(0, update_ai_text, response)
+        except Exception as e:
+            root.after(0, update_ai_text, f"发生错误: {str(e)}")
+        finally:
+            root.after(0, lambda: ai_search_button.config(state='normal'))
+
+    thread.start_new_thread(run_ai, ())
 # Spark消息处理--------------------------------------------
+
+def update_ai_text(content):
+    ai_text_box.config(state='normal')
+    ai_text_box.delete('1.0', tk.END)
+    ai_text_box.insert(tk.END, content)
+    ai_text_box.config(state='disabled')
 class Ws_Param(object):
     # 初始化
     def __init__(self, APPID, APIKey, APISecret, gpt_url):
@@ -321,10 +318,10 @@ class Ws_Param(object):
         return url
 # 收到websocket错误的处理
 def on_error(ws, error):
-    ai_text_box.insert('1.0', error)
+    ai_text_box.after (0,update_ai_text, error)
 # 收到websocket关闭的处理
 def on_close(ws):
-    ai_text_box.insert('1.0', '##连接已关闭##')
+    ai_text_box.after(0, update_ai_text,f'##连接已关闭##')
 # 收到websocket连接建立的处理
 def on_open(ws):
     thread.start_new_thread(run, (ws,))
@@ -334,19 +331,16 @@ def run(ws, *args):
 # 收到websocket消息的处理
 def on_message(ws, message):
     data = json.loads(message)
-    code = data['header']['code']
-    if code != 0:
-        ai_text_box.insert('1.0', f'请求错误: {code}, {data}')
+    ai_text_box.config(state='normal')
+    if data['header']['code'] != 0:
+        root.after(0, update_ai_text, f"请求错误: {data['header']['code']}")
         ws.close()
     else:
-        ai_text_box.config(state='normal')  # 允许编辑 ai_text_box
-        choices = data["payload"]["choices"]
-        status = choices["status"]
-        content = choices["text"][0]["content"]
-        ai_text_box.insert(tk.END, content)
-        if status == 2:
+        content = data["payload"]["choices"]["text"][0]["content"]
+        root.after(0, ai_text_box.insert(tk.END, content))
+        if data["payload"]["choices"]["status"] == 2:
             ws.close()
-    ai_text_box.config(state='disabled')  # 将文本框设置为不可编辑状态
+    ai_text_box.config(state='disabled')
 def gen_params(appid, query, domain):
     """
     通过appid和用户的提问来生成请参数
