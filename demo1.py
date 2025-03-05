@@ -1,3 +1,8 @@
+# _*_coding : UTF_8 _*_
+# author : SJYssr
+# Date : 2024/12/26 下午10:17
+# ClassName : demo1.py
+# Github : https://github.com/SJYssr
 import os
 import tkinter as tk
 from ctypes import windll, wintypes
