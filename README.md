@@ -45,7 +45,7 @@
 - 如果选择其他AI请自行修改代码
 - 关于隐藏(F3)时将窗口透明度降到最低，将窗口拉成细条放置在左边框
 - 输入法仍然会被录屏/截屏，能力有限无法解决，如果有大佬可以解决,可以在[issues](https://github.com/SJYssr/CX_EXAM_python/issues/1)留言
-~~## 关于congig.ini文件~~
+## ~~关于congig.ini文件~~
 - ~~config.ini文件中type为0时表示未设置AI，type为1时表示使用讯飞星火AI，type为2时表示使用deepseekAI~~
 ## 关于 config.yaml文件
 - config.yaml文件中type为0时表示未设置AI，type为1时表示使用讯飞星火AI，type为2时表示使用deepseekAI
