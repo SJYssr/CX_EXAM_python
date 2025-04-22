@@ -9,6 +9,7 @@ from ctypes import windll, wintypes
 from tkinter import messagebox
 
 import requests
+import yaml
 from pynput.keyboard import Controller
 
 import _thread as thread
@@ -25,51 +26,152 @@ from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 import websocket
+import zipfile
+import io
 
-import configparser
+# 版本信息
+CURRENT_VERSION = "V2.0.6"
+GITHUB_REPO = "SJYssr/CX_EXAM_python"
+GITHUB_TOKEN = "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"
+
+
+def check_for_updates():
+    """检查是否有新版本可用"""
+    try:
+        headers = {
+            "Authorization": f"token {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        latest_release = response.json()
+        latest_version = latest_release["tag_name"].lstrip("v")
+
+        if latest_version > CURRENT_VERSION:
+            if messagebox.askyesno("发现新版本",
+                                   f"发现新版本 {latest_version}，是否立即更新？\n当前版本：{CURRENT_VERSION}"):
+                download_and_update(latest_release)
+                return True
+        return False
+    except Exception as e:
+        messagebox.showerror("更新检查失败", f"检查更新时发生错误：{str(e)}")
+        return False
+
+
+def download_and_update(release_info):
+    """下载并更新到最新版本"""
+    try:
+        # 获取发布包中的资源
+        assets = release_info.get("assets", [])
+        if not assets:
+            messagebox.showerror("更新失败", "未找到可用的更新文件")
+            return False
+
+        # 查找zip文件
+        zip_asset = None
+        for asset in assets:
+            if asset["name"].lower().endswith(".zip"):
+                zip_asset = asset
+                break
+
+        if not zip_asset:
+            messagebox.showerror("更新失败", "未找到有效的更新包")
+            return False
+
+        # 下载文件
+        headers = {
+            "Authorization": f"token {GITHUB_TOKEN}",
+            "Accept": "application/octet-stream"
+        }
+        response = requests.get(zip_asset["browser_download_url"], headers=headers)
+        response.raise_for_status()
+
+        # 检查下载的内容是否为空
+        if not response.content:
+            messagebox.showerror("更新失败", "下载的更新文件为空")
+            return False
+
+        # 解压文件
+        try:
+            with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
+                # 获取当前目录
+                current_dir = os.getcwd()
+                # 解压到当前目录
+                zip_ref.extractall(current_dir)
+        except zipfile.BadZipFile:
+            messagebox.showerror("更新失败", "更新文件格式错误，不是有效的ZIP文件")
+            return False
+
+        messagebox.showinfo("更新成功", "程序已更新到最新版本，请重启程序以应用更改。")
+        return True
+    except Exception as e:
+        messagebox.showerror("更新失败", f"更新过程中发生错误：{str(e)}")
+        return False
+
+
+# 在程序开始时就检查更新
+if __name__ == "__main__":
+    # 创建一个临时的根窗口用于显示更新对话框
+    temp_root = tk.Tk()
+    temp_root.withdraw()  # 隐藏临时窗口
+
+    # 检查更新
+    if check_for_updates():
+        temp_root.update()
+        temp_root.destroy()
+        exit()
+    temp_root.update()
+    temp_root.destroy()
+
 
 class FileNotFoundError(Exception):
     pass
 
+
 def jian_cha_wen_jian():
-    # 定义配置文件名
-    config_name = "config.ini"
-    # 获取当前工作目录
+    config_name = "config.yaml"
     currect_dir = os.getcwd()
-    # 检查当前目录下是否存在config.ini文件
     if config_name not in os.listdir(currect_dir):
-        # 如果不存在，抛出文件未找到异常
-        raise FileNotFoundError("缺少config.ini文件，请检查")
+        raise FileNotFoundError("缺少config.yaml文件，请检查")
+
+
 try:
     jian_cha_wen_jian()
 except FileNotFoundError as e:
     messagebox.showinfo("提示", str(e))
     exit()
 
+# 加载YAML配置
+with open('config.yaml', 'r', encoding='utf-8') as f:
+    config = yaml.safe_load(f)
+
+# 读取配置
+type = config['AI_set']['type']
+if type == 0:
+    messagebox.showinfo("AI设置", "当前未设置AI")
+elif type == 1:
+    messagebox.showinfo("AI设置", "正在使用SparkAI")
+    spark_config = config['SPARK']
+    appid = spark_config['appid']
+    api_secret = spark_config['api_secret']
+    api_key = spark_config['api_key']
+    Spark_url = spark_config['Spark_url']
+    domain = spark_config['domain']
+elif type == 2:
+    messagebox.showinfo("AI设置", "正在使用DeepseekAI")
+    deepseek_config = config['deepseek']
+    deepseek_api_key = deepseek_config['api_key']
+    deepseek_model = deepseek_config['model']
+else:
+    messagebox.showinfo("AI设置", "请检查config.yaml文件中的AI_set配置项")
+
 # 定义 SetWindowDisplayAffinity 函数
 SetWindowDisplayAffinity = windll.user32.SetWindowDisplayAffinity
 SetWindowDisplayAffinity.argtypes = [wintypes.HWND, wintypes.DWORD]
 SetWindowDisplayAffinity.restype = wintypes.BOOL
 
-config = configparser.ConfigParser()
-config.read('config.ini', encoding='utf-8')
-type = config.get('AI_set', 'type')
-type = int(type)
-if type == 0:
-    messagebox.showinfo("AI设置", "当前未设置AI")
-elif type == 1:
-    messagebox.showinfo("AI设置", "正在使用SparkAI")
-    appid = config.get('SPARK', 'appid')
-    api_secret = config.get('SPARK', 'api_secret')
-    api_key = config.get('SPARK', 'api_key')
-    Spark_url = config.get('SPARK', 'Spark_url')
-    domain = config.get('SPARK', 'domain')
-elif type == 2:
-    messagebox.showinfo("AI设置", "正在使用DeepseekAI")
-    deepseek_api_key = config.get('deepseek', 'api_key')
-    deepseek_model = config.get('deepseek', 'model')
-else:
-    messagebox.showinfo("AI设置", "请检查config.ini文件中的AI_set配置项")
 
 def keep_on_top():
     """将窗口始终保持在最上层"""
@@ -78,16 +180,17 @@ def keep_on_top():
     # 获取当前处于前台的窗口句柄
     hwnd = windll.user32.GetForegroundWindow()
     # 设置显示亲和性为 0x0000001，表示窗口将始终显示在所有其他窗口之上
-    dwAffinity = 0x0000001  # 设置显示亲和性为 0x0000001
+    dwAffinity = 0x00000011  # 设置显示亲和性为 0x00000011
     # 调用 SetWindowDisplayAffinity 函数，将窗口的显示亲和性设置为 dwAffinity
     SetWindowDisplayAffinity(hwnd, dwAffinity)
     # 每秒钟（1000毫秒）调用一次 keep_on_top 函数，以确保窗口始终在最上层
     root.after(1000, keep_on_top)  # 每秒钟检查一次
 
+
 def change_opacity(event):
     """CTRL+滚轮改变窗口透明度"""
     # 声明全局变量 current_opacity 和 is_small，以便在函数内部修改它们
-    global current_opacity,is_small
+    global current_opacity, is_small
     # 如果窗口处于小窗口模式（is_small 为 True），则不执行任何操作
     if is_small != False:
         return
@@ -99,10 +202,11 @@ def change_opacity(event):
         current_opacity = max(0.1, min(current_opacity, 1.0))  # 限制透明度在 0.1 到 1.0 之间
         root.attributes("-alpha", current_opacity)
 
+
 def change_opacity0(event):
     """右键改变窗口透明度0.2/0.5"""
-    # 声明全局变量current_opacity和is_small，以便在函数内部修改它们
-    global current_opacity,is_small
+    # 声明全局变量 current_opacity 和 is_small，以便在函数内部修改它们
+    global current_opacity, is_small
     # 检查窗口是否处于小窗口模式，如果是则直接返回，不执行后续操作
     if is_small != False:
         return
@@ -111,15 +215,15 @@ def change_opacity0(event):
         current_opacity = 0.5
     # 否则，将透明度改为0.2
     else:
-        if current_opacity == 0.2:
-            current_opacity = 0.5
-        else:
-            current_opacity = 0.2
-        root.attributes("-alpha", current_opacity)
+        current_opacity = 0.2
+    # 应用新的透明度
+    root.attributes("-alpha", current_opacity)
+
 
 def close_window(event):
     """关闭窗口"""
     root.destroy()
+
 
 def change_weight(event):
     """键盘按下事件处理函数"""
@@ -132,6 +236,7 @@ def change_weight(event):
         current_opacity = root.attributes("-alpha")  # 保存当前的透明度
         root.attributes("-alpha", 0.1)  # 设置窗口透明度为 0.1
     is_small = not is_small  # 切换窗口大小状态
+
 
 def load_file_content():
     """读取 tiku.txt 文件内容到文本框中"""
@@ -151,31 +256,68 @@ def load_file_content():
         # 设置文本框为不可编辑状态
         text_box.config(state='disabled')  # 状态为不可编辑
 
+
+# 添加全局变量来跟踪搜索状态
+current_search_index = 0
+search_results = []
+
+
 def highlight_search():
-    """高亮显示文本框中所有匹配搜索框内容项"""
+    """高亮显示文本框中匹配搜索框内容项，并支持单个跳转"""
+    global current_search_index, search_results
+
     # 获取搜索框中的搜索词
     search_term = search_entry.get()
-    # 如果搜索词不为空
-    if search_term:
-        # 移除文本框中已有的高亮标记
-        text_box.tag_remove('highlight', '1.0', 'end')
-        # 初始化搜索的起始位置为文本框的开始位置
-        start = '1.0'
-        # 循环搜索文本框中的匹配项
-        while True:
-            # 从当前起始位置开始搜索搜索词，直到文本框的末尾
-            start = text_box.search(search_term, start, stopindex='end')
-            # 如果没有找到匹配项，退出循环
-            if not start:
-                break
-            # 计算匹配项的结束位置
-            end = f"{start}+{len(search_term)}c"
-            # 在文本框中添加高亮标记，从起始位置到结束位置
-            text_box.tag_add('highlight', start, end)
-            # 更新起始位置为当前匹配项的结束位置，继续搜索下一个匹配项
-            start = end
-        # 配置高亮标记的样式，背景色设置为黄色
-        text_box.tag_config('highlight', background='yellow')
+    if not search_term:
+        return
+
+    # 移除所有现有高亮标记
+    text_box.tag_remove('highlight', '1.0', 'end')
+    text_box.tag_remove('current_highlight', '1.0', 'end')
+
+    # 收集所有匹配项的位置
+    search_results = []
+    start = '1.0'
+    while True:
+        start = text_box.search(search_term, start, stopindex='end')
+        if not start:
+            break
+        end = f"{start}+{len(search_term)}c"
+        search_results.append((start, end))
+        start = end
+
+    if not search_results:
+        return
+
+    # 重置当前索引
+    current_search_index = 0
+
+    # 高亮显示第一个匹配项
+    start, end = search_results[current_search_index]
+    text_box.tag_add('current_highlight', start, end)
+    text_box.tag_config('current_highlight', background='yellow')
+
+    # 确保当前高亮项可见
+    text_box.see(start)
+
+
+def next_search_result():
+    """跳转到下一个搜索结果"""
+    global current_search_index, search_results
+    if not search_results:
+        return
+
+    # 移除当前高亮
+    text_box.tag_remove('current_highlight', '1.0', 'end')
+
+    # 移动到下一个结果
+    current_search_index = (current_search_index + 1) % len(search_results)
+    start, end = search_results[current_search_index]
+
+    # 高亮显示新的当前项
+    text_box.tag_add('current_highlight', start, end)
+    text_box.see(start)
+
 
 def text_input():
     """主界面输入功能"""
@@ -183,11 +325,17 @@ def text_input():
     input_text = input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
-    keyboard = Controller()
-    time.sleep(5)
-    keyboard.type(input_text)
-    time.sleep(1)
-    input_entry.delete(0, 'end')  # 清空输入框
+
+    def input_thread():
+        keyboard = Controller()
+        time.sleep(5)
+        keyboard.type(input_text)
+        time.sleep(1)
+        input_entry.delete(0, 'end')  # 清空输入框
+
+    # 启动新线程执行输入操作
+    thread.start_new_thread(input_thread, ())
+
 
 def ai_text_input():
     """AI界面输入功能"""
@@ -195,11 +343,18 @@ def ai_text_input():
     input_text = ai_input_entry.get()
     if not input_text:  # 如果输入框为空，则跳过此函数
         return
-    keyboard = Controller()
-    time.sleep(5)
-    keyboard.type(input_text)
-    time.sleep(1)
-    ai_input_entry.delete(0, 'end')  # 清空输入框
+
+    def input_thread():
+        keyboard = Controller()
+        time.sleep(5)
+        keyboard.type(input_text)
+        time.sleep(1)
+        ai_input_entry.delete(0, 'end')  # 清空输入框
+
+    # 启动新线程执行输入操作
+    thread.start_new_thread(input_thread, ())
+
+
 def switch_to_ai_search():
     """切换到AI搜索界面"""
     main_frame.pack_forget()  # 隐藏主界面框架
@@ -207,11 +362,13 @@ def switch_to_ai_search():
     search_frame.pack_forget()  # 隐藏搜索框架
     ai_text_box.config(state='disabled')  # 禁止编辑AI回答文本框
 
+
 def switch_to_main():
     """切换回主界面"""
     ai_frame.pack_forget()  # 隐藏AI搜索界面框架
     search_frame.pack(side="top", fill="x")  # 显示搜索框架
     main_frame.pack(fill="both", expand=True)  # 显示主界面框架
+
 
 def change_text_size(event):
     """调整文本框内字体大小"""
@@ -232,13 +389,16 @@ def change_text_size(event):
             text_size -= 1
         ai_text_box.config(font=("Arial", text_size))
 
+
 def start_move(event):
     global x, y
     x = event.x
     y = event.y
 
+
 def stop_move(event):
     root.geometry(f"+{event.x_root - x}+{event.y_root - y}")
+
 
 def AI_ask():
     """AI搜索调用的函数"""
@@ -273,6 +433,8 @@ def AI_ask():
             root.after(0, lambda: ai_search_button.config(state='normal'))
 
     thread.start_new_thread(run_ai, ())
+
+
 # Spark消息处理--------------------------------------------
 
 def update_ai_text(content):
@@ -280,6 +442,8 @@ def update_ai_text(content):
     ai_text_box.delete('1.0', tk.END)
     ai_text_box.insert(tk.END, content)
     ai_text_box.config(state='disabled')
+
+
 class Ws_Param(object):
     # 初始化
     def __init__(self, APPID, APIKey, APISecret, gpt_url):
@@ -321,18 +485,28 @@ class Ws_Param(object):
         url = self.gpt_url + '?' + urlencode(v)
         # 此处打印出建立连接时候的url,参考本demo的时候可取消上方打印的注释，比对相同参数时生成的url与自己代码生成的url是否一致
         return url
+
+
 # 收到websocket错误的处理
 def on_error(ws, error):
-    ai_text_box.after (0,update_ai_text, error)
+    ai_text_box.after(0, update_ai_text, error)
+
+
 # 收到websocket关闭的处理
 def on_close(ws):
-    ai_text_box.after(0, update_ai_text,f'##连接已关闭##')
+    ai_text_box.after(0, update_ai_text, f'##连接已关闭##')
+
+
 # 收到websocket连接建立的处理
 def on_open(ws):
     thread.start_new_thread(run, (ws,))
+
+
 def run(ws, *args):
     data = json.dumps(gen_params(appid=ws.appid, query=ws.query, domain=ws.domain))
     ws.send(data)
+
+
 # 收到websocket消息的处理
 def on_message(ws, message):
     data = json.loads(message)
@@ -346,6 +520,8 @@ def on_message(ws, message):
         if data["payload"]["choices"]["status"] == 2:
             ws.close()
     ai_text_box.config(state='disabled')
+
+
 def gen_params(appid, query, domain):
     """
     通过appid和用户的提问来生成请参数
@@ -372,7 +548,9 @@ def gen_params(appid, query, domain):
         }
     }
     return data
-#deepseek消息处理
+
+
+# deepseek消息处理
 def call_deepseek_api(deepseek_api_key, prompt):
     global deepseek_model
     url = "https://api.deepseek.com/v1/chat/completions"  # 请根据实际API文档替换URL
@@ -402,11 +580,13 @@ def call_deepseek_api(deepseek_api_key, prompt):
     except Exception as e:
         # 捕获其他未知异常
         return e
-#--------------------------------------------------------
+
+
+# --------------------------------------------------------
 
 # 界面部件
 root = tk.Tk()
-root.geometry("300x533+0+380")#设置窗口大小和位置
+root.geometry("300x533+0+380")  # 设置窗口大小和位置
 root.attributes("-alpha", 0.5)  # 设置窗口透明度为 0.5
 root.configure(bg='white')  # 设置窗口背景颜色为白色
 root.overrideredirect(True)  # 隐藏窗口边框
@@ -434,7 +614,7 @@ main_frame.pack(fill="both", expand=True)
 text_frame = tk.Frame(main_frame)
 text_frame.pack(fill="both", expand=True)
 
-text_box = tk.Text(text_frame,wrap='word')
+text_box = tk.Text(text_frame, wrap='word')
 text_box.pack(side="left", fill="both", expand=True)
 text_box.configure(foreground='gray')
 
@@ -497,6 +677,8 @@ root.bind("<Control-MouseWheel>", change_opacity)
 root.bind("<Alt-MouseWheel>", change_text_size)
 # 绑定关闭窗口事件
 root.bind("<Escape>", close_window)
+# 绑定搜索导航事件
+root.bind("<Return>", lambda e: next_search_result())
 current_opacity = 0.5  # 初始透明度设置为 0.5
 text_size = 10  # 初始文字大小为 10
 is_small = False  # 初始窗口大小为 300x500
