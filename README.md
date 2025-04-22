@@ -4,10 +4,12 @@
 - 该项目用于考试客户端，主要功能包括本地题库导入，本地题库搜题，AI搜题
 - 调用SetWindowDisplayAffinity函数，防止考试客户端的截屏，录屏
 - 文本一键输入功能
-- 界面可以隐藏(F3)
+- 界面可以隐藏(F3)（只是隐藏到最侧边）
 - 不同的透明度(右键0.2-0.5，CTRL+滚轮0.1-1)
+- 改变字体大小(ALT+滚轮)
 - 快捷退出按键（ESC）除ESC键外任何F1-F12键都可以在霸屏软件中退出此程序(需要自行更改代码)
 - 题库搜题功能，tiku.txt文件中输入题库，程序启动后会自动读取题库中的内容，可以搜索题库中的关键字
+- enter可以跳转到下一个
 - AI搜题功能，使用[讯飞星火](https://aiui.xfyun.cn/console),[Deepseek](https://www.deepseek.com)
 - 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.4)中已有打包好的文件可直接使用
 - 如果感觉有用的话请给我颗小星星
@@ -32,6 +34,7 @@
  - 2025.2.25 添加前置的文件查找功能
  - 2025.2.25 为代码添加详细的注释
  - 2025.2.27 为一些功能添加多线程处理，防止堵塞进程
+ - 2025.4.22 添加了在线更新功能，添加查找下一个功能（enter）
  ## 赞赏
 ![img](https://github.com/SJYssr/img/raw/main/1/zanshang.jpg)
 ## 注:
@@ -42,8 +45,10 @@
 - 如果选择其他AI请自行修改代码
 - 关于隐藏(F3)时将窗口透明度降到最低，将窗口拉成细条放置在左边框
 - 输入法仍然会被录屏/截屏，能力有限无法解决，如果有大佬可以解决,可以在[issues](https://github.com/SJYssr/CX_EXAM_python/issues/1)留言
-## 关于congig.ini文件
-- config.ini文件中type为0时表示未设置AI，type为1时表示使用讯飞星火AI，type为2时表示使用deepseekAI
+~~## 关于congig.ini文件~~
+- ~~config.ini文件中type为0时表示未设置AI，type为1时表示使用讯飞星火AI，type为2时表示使用deepseekAI~~
+## 关于 config.yaml文件
+- config.yaml文件中type为0时表示未设置AI，type为1时表示使用讯飞星火AI，type为2时表示使用deepseekAI
 
 # warning: 免责声明
 - 本代码遵循 [GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE) 协议，允许**开源/免费使用和引用/修改/衍生代码的开源/免费使用**，不允许**修改和衍生的代码作为闭源的商业软件发布和销售**，禁止**使用本代码盈利**，以此代码为基础的程序**必须**同样遵守 [GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE)协议
