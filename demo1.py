@@ -32,7 +32,7 @@ import io
 # 版本信息
 CURRENT_VERSION = "V2.0.6"
 GITHUB_REPO = "SJYssr/CX_EXAM_python"
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = "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"
 
 
 def check_for_updates():
