@@ -11,7 +11,7 @@
 - 题库搜题功能，tiku.txt文件中输入题库，程序启动后会自动读取题库中的内容，可以搜索题库中的关键字
 - enter可以跳转到下一个
 - AI搜题功能，使用[讯飞星火](https://aiui.xfyun.cn/console),[Deepseek](https://www.deepseek.com)
-- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/tag/V2.0.4)中已有打包好的文件可直接使用
+- 最新的[releases](https://github.com/SJYssr/CX_EXAM_python/releases/latest)中已有打包好的文件可直接使用
 - 如果感觉有用的话请给我颗小星星
 # 如需要破解复制粘贴功能&&篡改猴相关功能
 - 请移步[cef_cx_copy_tool](https://github.com/SJYssr/cef_cx_copy_tool)
