@@ -1,184 +1,176 @@
-# 超星考试客户端工具  
+# 超星学习通辅助工具 - Go版本
 
-<div align="center">
+![GitHub stars](https://img.shields.io/github/stars/SJYssr/CX_EXAM_python?style=social)
+![GitHub forks](https://img.shields.io/github/forks/SJYssr/CX_EXAM_python?style=social)
+![License](https://img.shields.io/github/license/SJYssr/CX_EXAM_python)
 
-![license](https://img.shields.io/github/license/SJYssr/CX_EXAM_python?style=flat-square)
-![stars](https://img.shields.io/github/stars/SJYssr/CX_EXAM_python?style=flat-square)
-![release](https://img.shields.io/github/v/release/SJYssr/CX_EXAM_python?style=flat-square)
-![python](https://img.shields.io/badge/python-3.7%2B-blue?style=flat-square)
-![platform](https://img.shields.io/badge/platform-windows-lightgrey?style=flat-square)
+> 🎓 一个功能强大的超星学习通辅助工具，采用Go+Python混合开发，具备防录屏保护、AI智能搜索和自动输入等实用功能。
 
-</div>
+## ✨ 主要特性
 
----
+- 🛡️ **防录屏保护** - 强化的防录屏功能，保护程序窗口和输入法窗口
+- 🔍 **智能搜索** - 支持题库内容快速搜索，高亮显示匹配结果
+- 🤖 **AI智能问答** - 集成Spark AI和Deepseek AI，智能回答问题
+- ⚡ **自动输入** - 延时自动输入功能，提高效率
+- 📱 **动态窗口** - 自动检测超星窗口位置，智能调整辅助工具位置
+- 🎨 **界面友好** - 透明度可调、大小可变的现代化界面
+- ⌨️ **快捷键支持** - 丰富的快捷键操作，操作更便捷
 
-> 🚀 **本项目旨在为考试客户端（如学习通）提供本地题库、AI搜题、界面增强等多种实用功能。**
+## 🚀 快速开始
 
----
+### 环境要求
 
-<details>
-<summary>📑 目录</summary>
+- **Go语言**: 1.21+
+- **Python**: 3.7+
+- **操作系统**: Windows 10/11
+- **依赖库**: 详见 `go.mod` 和下方Python依赖
 
-- [项目介绍](#项目介绍)
-- [主要功能](#主要功能)
-- [使用说明](#使用说明)
-- [常见问题](#常见问题)
-- [时间日历](#时间日历)
-- [赞赏](#赞赏)
-- [注意事项](#注意事项)
-- [配置说明](#配置说明)
-- [贡献与反馈](#贡献与反馈)
-- [免责声明](#免责声明)
+### 安装步骤
 
-</details>
+1. **克隆仓库**
+```bash
+git clone https://github.com/SJYssr/CX_EXAM_python.git
+cd CX_EXAM_python
+```
 
----
+2. **安装Go依赖**
+```bash
+go mod tidy
+```
 
-## 项目介绍
-本项目是一个专为考试客户端（如学习通）设计的辅助工具，集成了本地题库管理、AI智能搜题、窗口防护与界面增强等多项实用功能，提升考试答题效率与体验。
+3. **安装Python依赖**
+```bash
+pip install pynput
+```
 
----
+4. **构建项目**
+```bash
+# 运行构建脚本
+build.bat
 
-## 主要功能
+# 或者手动构建
+go build -o cx_exam.exe main.go
+```
 
-### 题库管理与搜索
-- **本地题库导入**：自动读取`tiku.txt`文件，支持大批量题目管理。
-- **关键词高亮搜索**：输入关键词后，所有匹配项高亮显示，支持回车键跳转下一个结果。
-- **题库内容只读保护**：防止误操作修改题库内容。
+5. **运行程序**
+```bash
+# 使用批处理文件运行
+run.bat
 
-### AI 智能搜题
-- **多AI平台支持**：可选[讯飞星火](https://aiui.xfyun.cn/console)或[Deepseek](https://www.deepseek.com)。
-- **一键AI问答**：输入问题后，AI自动返回答案，支持多线程防止界面卡顿。
-- **AI答案一键输入**：AI答案可一键自动输入到目标输入框（需英文输入法）。
+# 或者直接运行
+./cx_exam.exe
+```
 
-### 界面与交互增强
-- **窗口置顶与防录屏/截屏**：调用`SetWindowDisplayAffinity`，窗口始终置顶且无法被录屏/截屏工具捕获。
-- **窗口透明度调节**：右键一键切换（0.2/0.5），Ctrl+滚轮精细调节（0.1~1.0）。
-- **字体大小调节**：Alt+滚轮随时调整题库/AI答案字体大小。
-- **窗口快速隐藏/显示**：F3一键隐藏到屏幕边缘，再次按下恢复。
-- **窗口自由拖动**：Ctrl+鼠标左键拖动窗口到任意位置。
-- **ESC/F1-F12快捷退出**：ESC或任意F1-F12键可快速关闭程序（可自定义）。
+## 📖 使用说明
 
-### 其他实用功能
-- **在线更新检测**：自动检测新版本并提示更新。
-- **多线程处理**：AI问答、输入等操作均采用多线程，保证界面流畅不卡顿。
-- **详细注释与易用配置**：代码注释详细，`config.yaml`配置简单明了，便于二次开发。
+### 主界面功能
 
----
+1. **搜索功能**
+   - 在搜索框输入关键词
+   - 点击"搜索"按钮高亮显示匹配内容
+   - 按回车键可跳转到下一个搜索结果
 
-## 使用说明
+2. **AI搜索**
+   - 点击"AI"按钮进入AI搜索界面
+   - 输入问题后点击"AI搜索"获取智能回答
+   - 支持实时流式回复（Spark AI）
 
-### 环境准备
-1. **安装Python**：确保已安装Python 3.7+。
-2. **安装依赖**：在命令行中运行以下命令安装所需依赖：
-   ```bash
-   pip install tkinter requests pyyaml pynput websocket-client
-   ```
-3. **准备文件**：在程序运行目录下创建`tiku.txt`（题库）和`config.yaml`（配置文件）。
+3. **自动输入**
+   - 在输入框输入要发送的文字
+   - 点击"输入"按钮，程序将在5秒后自动输入内容
 
-### 配置AI平台
-1. **讯飞星火**：
-   - 在`config.yaml`中填写`appid`、`api_key`、`api_secret`。
-   - 申请地址：[讯飞星火](https://aiui.xfyun.cn/console)。
-2. **Deepseek**：
-   - 在`config.yaml`中填写`api_key`和`model`。
-   - 可直接使用预设，建议更换为自己的密钥。
+### 快捷键说明
 
-### 启动程序
-1. **运行程序**：在命令行中运行`demo1.py`。
-2. **首次启动**：程序会自动检测配置和题库文件。
-3. **主界面功能**：
-   - 题库搜索：输入关键词，回车跳转下一个结果。
-   - AI切换：点击"AI"按钮切换到AI搜题界面。
-   - 快捷输入：在输入框中输入内容，点击"输入"按钮自动输入。
+| 快捷键 | 功能 |
+|--------|------|
+| `F3` | 切换窗口大小（正常/迷你模式） |
+| `F4` | 手动刷新输入法保护 |
+| `ESC` | 退出程序 |
+| `Ctrl + 鼠标左键` | 拖动窗口 |
+| `Ctrl + 滚轮` | 调整窗口透明度 |
+| `Alt + 滚轮` | 调整文字大小 |
+| `右键点击` | 快速切换透明度（0.2/0.5） |
+| `回车键` | 跳转到下一个搜索结果 |
 
-### 常用快捷键与操作
-- **F3**：窗口隐藏/恢复
-- **Ctrl+鼠标左键**：拖动窗口
-- **右键**：切换透明度
-- **Ctrl+滚轮**：调整透明度
-- **Alt+滚轮**：调整字体大小
-- **ESC/F1-F12**：快速退出
-- **回车**：题库搜索下一个
+### 防录屏功能
 
----
+程序启动后会自动启用防录屏保护：
+- 保护主窗口不被录屏软件捕获
+- 自动检测并保护输入法窗口
+- 支持主流输入法：搜狗、百度、QQ、微软等
+- 可通过F4快捷键手动刷新保护
 
-## 常见问题
+## 🏗️ 项目架构
 
-- **Q: 启动报错"缺少config.yaml文件"？**
-  - A: 请确保`config.yaml`在程序同目录下，参考示例配置文件填写。
+```
+CX_EXAM_python/
+├── main.go              # 主程序入口
+├── config.go            # 配置管理
+├── ai_service.go        # AI服务管理
+├── gui_manager.go       # GUI管理器
+├── screen_protection.go # 屏幕保护功能
+├── file_handler.go      # 文件处理
+├── gui_components.py    # Python GUI组件
+├── tiku.txt            # 题库文件
+├── build.bat           # 构建脚本
+├── run.bat             # 运行脚本
+├── go.mod              # Go模块依赖
+└── LICENSE             # 许可证
+```
 
-- **Q: 题库无法加载或搜索？**
-  - A: 请确保`tiku.txt`存在且为UTF-8编码，每行一题。
+## 🔧 配置说明
 
-- **Q: AI搜题无响应？**
-  - A: 检查网络连接、API密钥是否正确，或更换AI平台。
+### AI服务配置
 
-- **Q: 窗口无法被录屏/截屏？**
-  - A: 仅主窗口受保护，输入法弹窗等仍可能被录屏，技术有限无法完全防护。
+程序支持多种AI服务，可在`config.go`中配置：
 
-- **Q: 如何自定义快捷键？**
-  - A: 可在`demo1.py`中修改相关绑定代码，注释详细易于调整。
+- **Spark AI**: 科大讯飞星火认知大模型
+- **Deepseek AI**: 深度求索AI模型
 
----
+### 题库配置
 
-## 时间日历
-| 日期         | 事件                                                         |
-| ------------ | ------------------------------------------------------------ |
-| 2024.12.26   | 项目开始，创建代码仓库                                       |
-| 2024.12.27   | 创建README和GPL-3.0 License，demo1.py实现透明度、快捷退出等 |
-| 2024.12.28   | 解决截屏/录屏，题库导入与高亮搜索                           |
-| 2024.12.29   | 添加一键输入功能                                            |
-| 2024.12.30   | 完成AI功能（讯飞星火），项目基本完成                        |
-| 2025.1.1     | 添加Alt+滚轮调整字体大小                                    |
-| 2025.1.6     | 添加窗口可移动（Ctrl+鼠标左键）                             |
-| 2025.1.7     | 添加config文件，AI功能更易配置                              |
-| 2025.2.13    | 添加Deepseek AI                                             |
-| 2025.2.25    | 添加前置文件查找、详细注释                                   |
-| 2025.2.27    | 多线程处理防止堵塞                                          |
-| 2025.4.22    | 在线更新、查找下一个功能                                     |
+- 题库内容存储在`tiku.txt`文件中
+- 支持自定义题库内容
+- 程序启动时自动加载题库
 
----
+## 🤝 贡献指南
 
-## 赞赏
-<p align="center">
-  <img src="https://github.com/SJYssr/img/raw/main/1/zanshang.jpg" width="250" />
-</p>
+我们欢迎任何形式的贡献！
 
----
+1. Fork 这个仓库
+2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建一个 Pull Request
 
-## 注意事项
-> ⚠️ **请确保运行目录下有`tiku.txt`和`config.yaml`文件**
-- AI逻辑代码在`AI_ask`函数中
-- 讯飞星火AI需自行申请密钥
-- 预留AI可直接使用，建议更换为自己的
-- 其他AI请自行修改代码
-- 隐藏(F3)时窗口透明度降到最低，拉成细条放左侧
-- 输入法内容仍可能被录屏/截屏，能力有限无法解决，如有方案欢迎[issues](https://github.com/SJYssr/CX_EXAM_python/issues/1)留言
-- 如需要破解复制粘贴功能&&篡改猴相关功能，请移步[cef_cx_copy_tool](https://github.com/SJYssr/cef_cx_copy_tool)
+## 📋 更新日志
 
----
+### v2.0.0 - Go版本重构
+- 🔄 主程序重构为Go语言，提升性能
+- 🛡️ 增强防录屏保护功能
+- 🤖 集成多种AI服务
+- ⚡ 优化窗口动态定位
+- 🎨 改进用户界面体验
 
-## 配置说明
-- `config.yaml`文件：
-  - `type=0` 未设置AI
-  - `type=1` 讯飞星火AI
-  - `type=2` DeepseekAI
+## ⚠️ 免责声明
 
----
+本工具仅用于学习和研究目的，请遵守相关法律法规和学校规定。使用本工具产生的任何后果由用户自行承担。
 
-## 贡献与反馈
-欢迎提交 [Issues](https://github.com/SJYssr/CX_EXAM_python/issues) 反馈问题或建议，或直接 Fork/PR 参与开发。
+## 📄 许可证
 
----
+本项目采用 [MIT 许可证](LICENSE) - 查看 LICENSE 文件了解详情
 
-## 免责声明
-> **本代码仅用于学习讨论，禁止用于盈利或违法用途。**
+## 👨‍💻 作者
 
-- 遵循 [GPL-3.0 License](https://github.com/SJYssr/CX_EXAM_python/blob/main/LICENSE) 协议：
-  - 允许开源/免费使用、引用、修改、衍生
-  - 禁止闭源商业发布、销售及盈利
-  - 基于本代码的程序**必须**同样遵守GPL-3.0协议
-- 他人或组织使用本代码进行的任何违法行为与本人无关
+**SJYssr**
+- GitHub: [@SJYssr](https://github.com/SJYssr)
+
+## 🙏 鸣谢
+
+- [lxn/walk](https://github.com/lxn/walk) - Windows GUI框架
+- [go-vgo/robotgo](https://github.com/go-vgo/robotgo) - 跨平台GUI自动化
+- [pynput](https://github.com/moses-palmer/pynput) - Python输入控制库
 
 ---
+
+⭐ 如果这个项目对您有帮助，请给个星标支持一下！ 
