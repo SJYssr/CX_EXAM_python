@@ -5,21 +5,26 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+)
 
-	"github.com/lxn/walk"
-	"github.com/lxn/win"
+// Windows API 类型定义
+type HWND uintptr
+
+const (
+	SM_CXSCREEN = 0
+	SM_CYSCREEN = 1
 )
 
 // ScreenProtection 屏幕保护结构体
 type ScreenProtection struct {
 	user32           *syscall.LazyDLL
 	kernel32         *syscall.LazyDLL
-	imeWindows       map[win.HWND]bool
+	imeWindows       map[HWND]bool
 	screenWidth      int32
 	screenHeight     int32
 	dynamicX         int32
 	dynamicY         int32
-	chaoxingWindow   win.HWND
+	chaoxingWindow   HWND
 	protectionActive bool
 }
 
@@ -32,18 +37,23 @@ type WindowRect struct {
 }
 
 // NewScreenProtection 创建屏幕保护实例
-func NewScreenProtection() (*ScreenProtection, error) {
+func NewScreenProtection() *ScreenProtection {
 	sp := &ScreenProtection{
 		user32:     syscall.NewLazyDLL("user32.dll"),
 		kernel32:   syscall.NewLazyDLL("kernel32.dll"),
-		imeWindows: make(map[win.HWND]bool),
+		imeWindows: make(map[HWND]bool),
 	}
 	
 	// 获取屏幕尺寸
-	sp.screenWidth = win.GetSystemMetrics(win.SM_CXSCREEN)
-	sp.screenHeight = win.GetSystemMetrics(win.SM_CYSCREEN)
+	procGetSystemMetrics := sp.user32.NewProc("GetSystemMetrics")
 	
-	return sp, nil
+	screenWidth, _, _ := procGetSystemMetrics.Call(uintptr(SM_CXSCREEN))
+	screenHeight, _, _ := procGetSystemMetrics.Call(uintptr(SM_CYSCREEN))
+	
+	sp.screenWidth = int32(screenWidth)
+	sp.screenHeight = int32(screenHeight)
+	
+	return sp
 }
 
 // StartProtection 启动保护功能
@@ -77,8 +87,9 @@ func (sp *ScreenProtection) protectionLoop() {
 // DetectAndProtectWindows 检测并保护窗口
 func (sp *ScreenProtection) DetectAndProtectWindows() {
 	// 保护当前程序窗口
-	foregroundWindow := win.GetForegroundWindow()
-	sp.ProtectWindow(foregroundWindow)
+	procGetForegroundWindow := sp.user32.NewProc("GetForegroundWindow")
+	foregroundWindow, _, _ := procGetForegroundWindow.Call()
+	sp.ProtectWindow(HWND(foregroundWindow))
 	
 	// 查找并保护输入法窗口
 	sp.FindAndProtectIMEWindows()
@@ -87,14 +98,14 @@ func (sp *ScreenProtection) DetectAndProtectWindows() {
 // FindAndProtectIMEWindows 查找并保护输入法窗口 (简化实现)
 func (sp *ScreenProtection) FindAndProtectIMEWindows() {
 	// 清空之前的输入法窗口列表
-	sp.imeWindows = make(map[win.HWND]bool)
+	sp.imeWindows = make(map[HWND]bool)
 	
 	// 暂时简化实现，避免使用复杂的Windows API
-	fmt.Printf("查找输入法窗口功能暂时简化\n")
+	// 移除频繁的调试输出
 }
 
 // ProtectWindow 保护指定窗口免受录屏
-func (sp *ScreenProtection) ProtectWindow(hwnd win.HWND) bool {
+func (sp *ScreenProtection) ProtectWindow(hwnd HWND) bool {
 	if hwnd == 0 {
 		return false
 	}
@@ -146,14 +157,14 @@ func (sp *ScreenProtection) DetectDynamicPosition() {
 }
 
 // FindChaoxingWindow 查找超星学习通窗口 (简化实现)
-func (sp *ScreenProtection) FindChaoxingWindow() win.HWND {
+func (sp *ScreenProtection) FindChaoxingWindow() HWND {
 	// 暂时简化实现，返回0表示未找到
 	// 实际实现需要枚举窗口和窗口标题匹配
 	return 0
 }
 
 // getWindowRect 获取窗口矩形
-func (sp *ScreenProtection) getWindowRect(hwnd win.HWND, rect *WindowRect) bool {
+func (sp *ScreenProtection) getWindowRect(hwnd HWND, rect *WindowRect) bool {
 	procGetWindowRect := sp.user32.NewProc("GetWindowRect")
 	
 	ret, _, _ := procGetWindowRect.Call(
@@ -178,7 +189,8 @@ func (sp *ScreenProtection) ManualRefreshIMEProtection() {
 		message = "⚠️ 未检测到活动的输入法窗口\n💡 请确保输入法正在运行并处于可见状态"
 	}
 	
-	walk.MsgBox(nil, "输入法保护", message, walk.MsgBoxIconInformation)
+	// 暂时只打印到控制台，GUI版本可以通过callback显示消息
+	fmt.Println("输入法保护:", message)
 }
 
 // GetIMEWindowsCount 获取当前检测到的输入法窗口数量
@@ -187,7 +199,7 @@ func (sp *ScreenProtection) GetIMEWindowsCount() int {
 }
 
 // GetChaoxingWindow 获取超星窗口句柄
-func (sp *ScreenProtection) GetChaoxingWindow() win.HWND {
+func (sp *ScreenProtection) GetChaoxingWindow() HWND {
 	return sp.chaoxingWindow
 }
 
