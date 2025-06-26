@@ -131,6 +131,8 @@ func (gc *GUIComponents) findChaoxingWindow() win.HWND {
 
 // CreateMainWindow 创建主窗口
 func (gc *GUIComponents) CreateMainWindow() error {
+	log.Println("开始创建主窗口结构...")
+	
 	err := MainWindow{
 		AssignTo: &gc.mainWindow,
 		Title:    "超星学习通辅助工具 - Go版",
@@ -138,20 +140,70 @@ func (gc *GUIComponents) CreateMainWindow() error {
 		Size:     Size{Width: 300, Height: 533},
 		Layout:   VBox{},
 		OnKeyDown: gc.handleKeyDown,
-		OnMouseDown: gc.handleMouseDown,
-		OnMouseMove: gc.handleMouseMove,
-		OnMouseUp: gc.handleMouseUp,
 		Children: []Widget{
-			gc.createMainInterface(),
-			gc.createAIInterface(),
+			// 创建一个简单的主界面
+			Composite{
+				AssignTo: &gc.mainContainer,
+				Layout:   VBox{},
+				Children: []Widget{
+					// 搜索框区域
+					Composite{
+						Layout: HBox{},
+						Children: []Widget{
+							LineEdit{
+								AssignTo: &gc.searchEdit,
+								OnKeyDown: func(key walk.Key) {
+									if key == walk.KeyReturn {
+										gc.nextSearchResult()
+									}
+								},
+							},
+							PushButton{
+								AssignTo:  &gc.searchButton,
+								Text:      "搜索",
+								OnClicked: gc.onSearchClicked,
+							},
+							PushButton{
+								AssignTo:  &gc.aiButton,
+								Text:      "AI",
+								OnClicked: gc.switchToAISearch,
+							},
+						},
+					},
+					
+					// 文本显示区域
+					TextEdit{
+						AssignTo: &gc.contentText,
+						ReadOnly: true,
+						VScroll:  true,
+					},
+					
+					// 输入区域
+					Composite{
+						Layout: HBox{},
+						Children: []Widget{
+							LineEdit{
+								AssignTo: &gc.inputEdit,
+							},
+							PushButton{
+								AssignTo:  &gc.inputButton,
+								Text:      "输入",
+								OnClicked: gc.onInputClicked,
+							},
+						},
+					},
+				},
+			},
 		},
 	}.Create()
 	
 	if err != nil {
-		return err
+		return fmt.Errorf("创建主窗口失败: %v", err)
 	}
 	
-	// 设置窗口位置和透明度
+	log.Println("主窗口结构创建完成，设置窗口位置...")
+	
+	// 设置窗口位置
 	gc.mainWindow.SetBounds(walk.Rectangle{
 		X:      gc.dynamicX,
 		Y:      gc.dynamicY,
@@ -159,122 +211,19 @@ func (gc *GUIComponents) CreateMainWindow() error {
 		Height: 533,
 	})
 	
+	log.Println("加载题库内容...")
 	// 加载题库内容
 	gc.loadContent()
 	
+	log.Println("启动保持置顶功能...")
 	// 启动保持置顶的goroutine
 	go gc.keepOnTop()
 	
+	log.Println("主窗口创建和初始化完成")
 	return nil
 }
 
-// createMainInterface 创建主界面
-func (gc *GUIComponents) createMainInterface() Widget {
-	return Composite{
-		AssignTo: &gc.mainContainer,
-		Layout:   VBox{},
-		Children: []Widget{
-			// 搜索框区域
-			Composite{
-				Layout: HBox{},
-				Children: []Widget{
-					LineEdit{
-						AssignTo: &gc.searchEdit,
-						OnKeyDown: func(key walk.Key) {
-							if key == walk.KeyReturn {
-								gc.nextSearchResult()
-							}
-						},
-					},
-					PushButton{
-						AssignTo:  &gc.searchButton,
-						Text:      "搜索",
-						OnClicked: gc.onSearchClicked,
-					},
-					PushButton{
-						AssignTo:  &gc.aiButton,
-						Text:      "AI",
-						OnClicked: gc.switchToAISearch,
-					},
-				},
-			},
-			
-			// 文本显示区域
-			TextEdit{
-				AssignTo: &gc.contentText,
-				ReadOnly: true,
-				VScroll:  true,
-			},
-			
-			// 输入区域
-			Composite{
-				Layout: HBox{},
-				Children: []Widget{
-					LineEdit{
-						AssignTo: &gc.inputEdit,
-					},
-					PushButton{
-						AssignTo:  &gc.inputButton,
-						Text:      "输入",
-						OnClicked: gc.onInputClicked,
-					},
-				},
-			},
-		},
-	}
-}
 
-// createAIInterface 创建AI界面
-func (gc *GUIComponents) createAIInterface() Widget {
-	return Composite{
-		AssignTo: &gc.aiContainer,
-		Layout:   VBox{},
-		Visible:  false,
-		Children: []Widget{
-			// AI搜索框区域
-			Composite{
-				Layout: HBox{},
-				Children: []Widget{
-					LineEdit{
-						AssignTo: &gc.aiSearchEdit,
-					},
-					PushButton{
-						AssignTo:  &gc.aiSearchButton,
-						Text:      "AI搜索",
-						OnClicked: gc.onAISearchClicked,
-					},
-					PushButton{
-						AssignTo:  &gc.backButton,
-						Text:      "返回",
-						OnClicked: gc.switchToMain,
-					},
-				},
-			},
-			
-			// AI文本显示区域
-			TextEdit{
-				AssignTo: &gc.aiContentText,
-				ReadOnly: true,
-				VScroll:  true,
-			},
-			
-			// AI输入区域
-			Composite{
-				Layout: HBox{},
-				Children: []Widget{
-					LineEdit{
-						AssignTo: &gc.aiInputEdit,
-					},
-					PushButton{
-						AssignTo:  &gc.aiInputButton,
-						Text:      "输入",
-						OnClicked: gc.onAIInputClicked,
-					},
-				},
-			},
-		},
-	}
-}
 
 // 事件处理函数
 
@@ -403,14 +352,10 @@ func (gc *GUIComponents) onInputClicked() {
 	go gc.autoInput(inputText, gc.inputEdit)
 }
 
-// onAIInputClicked AI输入按钮点击事件
+// onAIInputClicked AI输入按钮点击事件 (简化版本)
 func (gc *GUIComponents) onAIInputClicked() {
-	inputText := gc.aiInputEdit.Text()
-	if inputText == "" {
-		return
-	}
-	
-	go gc.autoInput(inputText, gc.aiInputEdit)
+	// 暂时使用消息框代替
+	walk.MsgBox(gc.mainWindow, "AI输入", "AI输入功能正在开发中...", walk.MsgBoxIconInformation)
 }
 
 // autoInput 自动输入文本
@@ -437,51 +382,22 @@ func (gc *GUIComponents) sendKeys(text string) {
 	// 或者使用其他方式实现自动输入
 }
 
-// switchToAISearch 切换到AI搜索界面
+// switchToAISearch 切换到AI搜索界面 (简化版本)
 func (gc *GUIComponents) switchToAISearch() {
-	gc.mutex.Lock()
-	defer gc.mutex.Unlock()
-	
-	gc.mainContainer.SetVisible(false)
-	gc.aiContainer.SetVisible(true)
-	gc.isAIMode = true
+	// 暂时使用消息框代替AI界面
+	walk.MsgBox(gc.mainWindow, "AI搜索", "AI搜索功能正在开发中...", walk.MsgBoxIconInformation)
 }
 
-// switchToMain 切换回主界面
+// switchToMain 切换回主界面 (简化版本)
 func (gc *GUIComponents) switchToMain() {
-	gc.mutex.Lock()
-	defer gc.mutex.Unlock()
-	
-	gc.aiContainer.SetVisible(false)
-	gc.mainContainer.SetVisible(true)
-	gc.isAIMode = false
+	// 当前已经在主界面，无需操作
+	log.Println("已在主界面")
 }
 
-// onAISearchClicked AI搜索按钮点击事件
+// onAISearchClicked AI搜索按钮点击事件 (简化版本)
 func (gc *GUIComponents) onAISearchClicked() {
-	query := gc.aiSearchEdit.Text()
-	if query == "" {
-		return
-	}
-	
-	// 禁用按钮，显示加载状态
-	gc.aiSearchButton.SetEnabled(false)
-	gc.aiContentText.SetText("正在思考中，请稍候...")
-	
-	// 异步调用AI服务
-	go func() {
-		response, err := gc.aiService.Ask(query)
-		
-		// 在主线程更新UI
-		gc.mainWindow.Synchronize(func() {
-			gc.aiSearchButton.SetEnabled(true)
-			if err != nil {
-				gc.aiContentText.SetText(fmt.Sprintf("AI搜索失败: %v", err))
-			} else {
-				gc.aiContentText.SetText(response)
-			}
-		})
-	}()
+	// 暂时使用消息框代替
+	walk.MsgBox(gc.mainWindow, "AI搜索", "AI搜索功能正在开发中...", walk.MsgBoxIconInformation)
 }
 
 // toggleWindowSize 切换窗口大小
