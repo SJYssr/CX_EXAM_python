@@ -1,12 +1,25 @@
+// +build !simple
+
 package main
 
 import (
 	"fmt"
 	"log"
 	"os"
+	"unicode/utf8"
 )
 
 func main() {
+	// 检测字符编码支持
+	testStr := "测试中文显示"
+	if !utf8.ValidString(testStr) || len(testStr) != utf8.RuneCountInString(testStr)*3 {
+		fmt.Println("Character encoding issue detected, switching to simple mode...")
+		if gui, err := NewSimpleFyneGUI(); err == nil {
+			gui.Run()
+			return
+		}
+	}
+
 	fmt.Println("🚀 正在启动超星学习通辅助工具 - Fyne GUI版本...")
 
 	// 初始化配置
