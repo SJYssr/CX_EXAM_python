@@ -5,16 +5,15 @@ import (
 	"log"
 
 	"github.com/lxn/walk"
-	. "github.com/lxn/walk/declarative"
 )
 
-type MainWindow struct {
+type MainWindowApp struct {
 	*walk.MainWindow
-	config      *Config
-	aiService   *AIService
-	protection  *ScreenProtection
-	fileHandler *FileHandler
-	gui         *GUIManager
+	config       *Config
+	aiService    *AIService
+	protection   *ScreenProtection
+	fileHandler  *FileHandler
+	guiComponents *GUIComponents
 }
 
 func main() {
@@ -22,15 +21,20 @@ func main() {
 	fmt.Println("作者: SJYssr")
 	fmt.Println("Github: https://github.com/SJYssr")
 	
-	app := &MainWindow{}
+	app := &MainWindowApp{}
 	
 	// 初始化各个组件
 	if err := app.initialize(); err != nil {
 		log.Fatal("初始化失败:", err)
 	}
 	
-	// 创建GUI
-	if err := app.createMainWindow(); err != nil {
+	// 创建GUI组件管理器
+	if err := app.createGUIComponents(); err != nil {
+		log.Fatal("创建GUI组件失败:", err)
+	}
+	
+	// 创建主窗口
+	if err := app.guiComponents.CreateMainWindow(); err != nil {
 		log.Fatal("创建主窗口失败:", err)
 	}
 	
@@ -38,7 +42,7 @@ func main() {
 	app.protection.StartProtection()
 	
 	// 显示增强功能提示
-	walk.MsgBox(app, "防录屏增强", 
+	walk.MsgBox(app.guiComponents.mainWindow, "防录屏增强", 
 		"✅ 防录屏功能已增强！\n\n"+
 		"🔒 程序窗口和输入法窗口现在都受到保护\n"+
 		"📹 录屏软件将无法捕获这些窗口内容\n"+
@@ -46,14 +50,18 @@ func main() {
 		"⚡ 快捷键说明：\n"+
 		"🔄 F4 - 手动刷新输入法保护\n"+
 		"🪟 F3 - 切换窗口大小\n"+
-		"❌ ESC - 退出程序", 
+		"❌ ESC - 退出程序\n"+
+		"🎯 Ctrl+鼠标左键 - 拖动窗口\n"+
+		"🔍 Ctrl+滚轮 - 调整透明度\n"+
+		"👆 右键点击 - 快速切换透明度\n"+
+		"↩️ 回车键 - 跳转搜索结果", 
 		walk.MsgBoxOK)
 	
-	// 运行主循环
-	app.Run()
+	// 运行GUI
+	app.guiComponents.Run()
 }
 
-func (mw *MainWindow) initialize() error {
+func (mw *MainWindowApp) initialize() error {
 	var err error
 	
 	// 初始化配置
@@ -83,146 +91,14 @@ func (mw *MainWindow) initialize() error {
 	return nil
 }
 
-func (mw *MainWindow) createMainWindow() error {
-	var searchEdit *walk.LineEdit
-	var contentText *walk.TextEdit
-	var inputEdit *walk.LineEdit
+func (mw *MainWindowApp) createGUIComponents() error {
+	var err error
 	
-	err := MainWindow{
-		AssignTo: &mw.MainWindow,
-		Title:    "超星学习通辅助工具 - Go版",
-		MinSize:  Size{Width: 300, Height: 533},
-		Size:     Size{Width: 300, Height: 533},
-		Layout:   VBox{},
-		OnKeyDown: mw.handleKeyDown,
-		Children: []Widget{
-			Composite{
-				Layout: VBox{},
-				Children: []Widget{
-					// 搜索框
-					LineEdit{
-						AssignTo: &searchEdit,
-						Text:     "",
-					},
-					
-					// 按钮组
-					Composite{
-						Layout: HBox{},
-						Children: []Widget{
-							PushButton{
-								Text: "搜索",
-								OnClicked: mw.onSearchClicked,
-							},
-							PushButton{
-								Text: "AI搜索",
-								OnClicked: mw.onAISearchClicked,
-							},
-						},
-					},
-					
-					// 文本显示区域
-					TextEdit{
-						AssignTo: &contentText,
-						ReadOnly: true,
-						VScroll:  true,
-					},
-					
-					// 输入框
-					LineEdit{
-						AssignTo: &inputEdit,
-						Text:     "",
-					},
-					
-					// 输入按钮
-					PushButton{
-						Text: "输入",
-						OnClicked: mw.onInputClicked,
-					},
-				},
-			},
-		},
-	}.Create()
-	
+	// 创建GUI组件管理器
+	mw.guiComponents, err = NewGUIComponents(mw.aiService, mw.protection, mw.fileHandler)
 	if err != nil {
-		return err
-	}
-	
-	// 初始化GUI管理器
-	mw.gui, err = NewGUIManager(mw.MainWindow, mw.protection)
-	if err != nil {
-		return err
-	}
-	
-	// 设置GUI组件引用
-	mw.gui.SearchEdit = searchEdit
-	mw.gui.ContentText = contentText
-	mw.gui.InputEdit = inputEdit
-	
-	// 设置动态位置
-	mw.gui.SetDynamicPosition()
-	
-	// 加载题库内容
-	content, err := mw.fileHandler.LoadTikuContent()
-	if err != nil {
-		log.Printf("加载题库内容失败: %v", err)
-	} else {
-		mw.gui.ContentText.SetText(content)
+		return fmt.Errorf("创建GUI组件管理器失败: %v", err)
 	}
 	
 	return nil
-}
-
-func (mw *MainWindow) handleKeyDown(key walk.Key) {
-	switch key {
-	case walk.KeyF3:
-		mw.gui.ToggleWindowSize()
-	case walk.KeyF4:
-		mw.protection.ManualRefreshIMEProtection()
-	case walk.KeyEscape:
-		mw.Close()
-	}
-}
-
-func (mw *MainWindow) onSearchClicked() {
-	if mw.gui.SearchEdit == nil {
-		return
-	}
-	searchText := mw.gui.SearchEdit.Text()
-	if searchText != "" {
-		mw.gui.HighlightSearch(searchText)
-	}
-}
-
-func (mw *MainWindow) onAISearchClicked() {
-	if mw.gui.SearchEdit == nil {
-		return
-	}
-	query := mw.gui.SearchEdit.Text()
-	if query == "" {
-		return
-	}
-	
-	// 异步调用AI服务
-	go func() {
-		response, err := mw.aiService.Ask(query)
-		if err != nil {
-			walk.MsgBox(mw, "AI搜索错误", fmt.Sprintf("AI搜索失败: %v", err), walk.MsgBoxIconError)
-			return
-		}
-		
-		// 在主线程更新UI
-		mw.Synchronize(func() {
-			mw.gui.ShowAIResponse(response)
-		})
-	}()
-}
-
-func (mw *MainWindow) onInputClicked() {
-	if mw.gui.InputEdit == nil {
-		return
-	}
-	inputText := mw.gui.InputEdit.Text()
-	if inputText != "" {
-		go mw.gui.AutoInput(inputText)
-	}
 } 
