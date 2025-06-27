@@ -1,3 +1,5 @@
+// +build ascii
+
 package main
 
 import (

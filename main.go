@@ -1,4 +1,4 @@
-// +build !simple,!ascii
+// +build !simple,!ascii,!unicode
 
 package main
 
