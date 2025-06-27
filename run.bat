@@ -2,7 +2,7 @@
 chcp 65001 >nul
 cls
 echo ====================================
-echo    超星考试客户端工具 (C# 版本)
+echo    fuck超星 (C# 版本)
 echo ====================================
 echo.
 
@@ -37,7 +37,7 @@ if not exist "bin\Release\net6.0-windows\CxExamClient.exe" (
 REM 启动程序
 echo [3/3] 启动程序...
 echo.
-echo 正在启动超星考试客户端工具...
+echo 正在启动fuck超星...
 echo ====================================
 echo.
 

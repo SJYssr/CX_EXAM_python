@@ -320,7 +320,6 @@ namespace CxExamClient
                 case Key.Escape:
                 case Key.F1:
                 case Key.F2:
-                case Key.F5:
                 case Key.F6:
                 case Key.F7:
                 case Key.F8:
@@ -423,7 +422,7 @@ namespace CxExamClient
                 MessageBox.Show(statusMessage, "防录屏状态", MessageBoxButton.OK, MessageBoxImage.Information);
                 
                 string titleMessage = success ? "防录屏已启用" : "防录屏已禁用";
-                Title = $"超星考试客户端 - {titleMessage}";
+                Title = $"fuck超星 - {titleMessage}";
                 
                 // 3秒后恢复原标题
                 var timer = new System.Windows.Threading.DispatcherTimer
@@ -432,7 +431,7 @@ namespace CxExamClient
                 };
                 timer.Tick += (s, e) =>
                 {
-                    Title = "超星考试客户端";
+                    Title = "fuck超星";
                     timer.Stop();
                 };
                 timer.Start();
@@ -440,7 +439,7 @@ namespace CxExamClient
             catch (Exception ex)
             {
                 MessageBox.Show($"切换防录屏失败:\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                Title = "超星考试客户端 - 防录屏功能异常";
+                Title = "fuck超星 - 防录屏功能异常";
                 
                 var timer = new System.Windows.Threading.DispatcherTimer
                 {
@@ -448,7 +447,7 @@ namespace CxExamClient
                 };
                 timer.Tick += (s, e) =>
                 {
-                    Title = "超星考试客户端";
+                    Title = "fuck超星";
                     timer.Stop();
                 };
                 timer.Start();
