@@ -4,8 +4,6 @@ go 1.21
 
 require (
 	fyne.io/fyne/v2 v2.4.5
-	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
-	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	golang.org/x/text v0.13.0
 )
 
@@ -29,12 +27,13 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tevino/abool v1.2.0 // indirect
+	github.com/webview/webview v0.0.0-20250624150658-2fde37c73058 // indirect
+	github.com/webview/webview_go v0.0.0-20240831120633-6173450d4dd6 // indirect
 	github.com/yuin/goldmark v1.5.5 // indirect
 	golang.org/x/image v0.11.0 // indirect
 	golang.org/x/mobile v0.0.0-20230531173138-3c911d8e3eda // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
-	gopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/js/dom v0.0.0-20210725211120-f030747120f2 // indirect
 )
