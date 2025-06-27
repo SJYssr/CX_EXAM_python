@@ -1,75 +1,34 @@
 # C# 版本超星考试客户端配置文件
 
-# AI 服务配置
-aiConfig:
-  # 讯飞星火AI配置
-  sparkApiKey: "your_spark_api_key_here"
-  sparkAppId: "your_spark_app_id_here"
-  sparkApiSecret: "your_spark_api_secret_here"
-  sparkApiUrl: "wss://spark-api.xf-yun.com/v3.5/chat"
-  
-  # Deepseek AI配置
-  deepseekApiKey: "your_deepseek_api_key_here"
-  deepseekApiUrl: "https://api.deepseek.com/v1/chat/completions"
-  
-  # 默认AI服务 (spark/deepseek)
-  defaultAiService: "deepseek"
+# AI 服务类型设置
+AI_set:
+  # AI服务类型: 0=未设置, 1=Spark, 2=Deepseek
+  type: 2
 
-# 界面配置
-uiConfig:
-  # 窗口透明度 (0.1-1.0)
-  windowOpacity: 0.9
-  
-  # 窗口置顶
-  windowTopmost: true
-  
-  # 搜索延迟 (毫秒)
-  autoSearchDelay: 500
-  
-  # 默认窗口大小
-  defaultWindowWidth: 800
-  defaultWindowHeight: 600
-
-# 输入配置
-inputConfig:
-  # 自动输入延迟 (毫秒)
-  autoInputDelay: 5000
-  
-  # 启用快捷键
-  enableHotkeys: true
-  
-  # 输入模拟方式 (sendkeys/api)
-  inputMethod: "api"
-
-# 搜索配置
-searchConfig:
-  # 高亮颜色
-  highlightColor: "Yellow"
-  
-  # 搜索历史数量
-  maxSearchHistory: 50
-  
-  # 是否区分大小写
-  caseSensitive: false
-
-# 题库配置
-tikuConfig:
+# 题库路径配置
+PATH:
   # 题库文件路径
-  tikuFilePath: "tiku.txt"
-  
-  # 文件编码
-  fileEncoding: "UTF-8"
-  
-  # 缓存题库内容
-  cacheContent: true
+  path: "tiku.txt"
 
-# 日志配置
-logConfig:
-  # 日志级别 (Debug/Info/Warning/Error)
-  logLevel: "Info"
-  
-  # 是否启用文件日志
-  enableFileLog: true
-  
-  # 日志文件路径
-  logFilePath: "logs/app.log" 
+# 讯飞星火AI配置
+SPARK:
+  # WebSocket URL
+  Spark_url: "wss://spark-api.xf-yun.com/v3.5/chat"
+  # API密钥
+  api_key: "your_spark_api_key_here"
+  # API密钥
+  api_secret: "your_spark_api_secret_here"
+  # 应用ID
+  appid: "your_spark_app_id_here"
+  # 模型域名
+  domain: "generalv3.5"
+
+# Deepseek AI配置 - 腾讯云免费版本（2025年2月前免费）
+deepseek:
+  # API密钥 - 需要去腾讯云申请：https://console.cloud.tencent.com/lke
+  # 注册腾讯云账号 -> 开通大模型知识引擎 -> 创建API密钥
+  api_key: "sk-请替换为腾讯云申请的API密钥"
+  # 模型名称
+  model: "deepseek-chat"
+  # API地址 - 腾讯云免费API地址
+  api_url: "https://api.lkeap.cloud.tencent.com/v1" 

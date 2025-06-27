@@ -44,7 +44,8 @@ namespace CxExamClient.Services
 
         private async Task<string> AskDeepseekAiAsync(string question)
         {
-            const string url = "https://api.deepseek.com/v1/chat/completions";
+            // 使用配置文件中的API地址，支持腾讯云等第三方平台
+            var url = $"{_config.deepseek.api_url.TrimEnd('/')}/chat/completions";
             
             var requestData = new
             {

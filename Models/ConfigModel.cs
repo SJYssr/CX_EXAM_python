@@ -31,5 +31,6 @@ namespace CxExamClient.Models
     {
         public string api_key { get; set; } = string.Empty;
         public string model { get; set; } = "deepseek-chat";
+        public string api_url { get; set; } = "https://api.deepseek.com/v1";
     }
 } 
