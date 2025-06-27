@@ -27,6 +27,8 @@
 
             <!-- 搜索框架 -->
             <DockPanel Grid.Row="0" x:Name="SearchFrame" Margin="5">
+                <Button x:Name="DebugButton" Content="调试" DockPanel.Dock="Right" 
+                        Width="40" Click="DebugButton_Click"/>
                 <Button x:Name="AiButton" Content="AI" DockPanel.Dock="Right" 
                         Width="40" Click="AiButton_Click"/>
                 <Button x:Name="SearchButton" Content="搜索" DockPanel.Dock="Right" 

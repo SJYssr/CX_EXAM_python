@@ -45,8 +45,8 @@ namespace CxExamClient
         {
             try
             {
-                // 暂时注释掉Windows API调用，可能导致问题
-                // WindowManager.ConfigureWindow(this);
+                // 配置窗口（包括置顶和防录屏）
+                WindowManager.ConfigureWindow(this);
                 
                 // 设置初始透明度
                 Opacity = _currentOpacity;
@@ -246,6 +246,28 @@ namespace CxExamClient
         }
         #endregion
 
+        #region 调试功能
+        private void DebugButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShowWindowSelector();
+        }
+
+        private void ShowWindowSelector()
+        {
+            try
+            {
+                // 创建窗口选择对话框
+                var windowSelector = new WindowSelectorDialog();
+                windowSelector.Owner = this;
+                windowSelector.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"打开窗口选择器失败:\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        #endregion
+
         #region 窗口操作
         private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -291,10 +313,13 @@ namespace CxExamClient
                 case Key.F3:
                     ChangeWeight();
                     break;
+                case Key.F4:
+                    ToggleAntiScreenCapture();
+                    break;
+
                 case Key.Escape:
                 case Key.F1:
                 case Key.F2:
-                case Key.F4:
                 case Key.F5:
                 case Key.F6:
                 case Key.F7:
@@ -375,6 +400,62 @@ namespace CxExamClient
                 AiTextBox.FontSize = _textSize;
             }
         }
+
+        private void ToggleAntiScreenCapture()
+        {
+            try
+            {
+                bool success = WindowManager.ToggleDisplayAffinity(this);
+                
+                // 获取系统信息
+                string osInfo = WindowManager.GetOSInfo();
+                
+                // 构建状态信息
+                string mainStatus = success ? "✅ 防录屏已启用" : "❌ 防录屏已禁用";
+                
+                // 显示详细状态消息框
+                string statusMessage = $"=== 防录屏状态 ===\n" +
+                                     $"系统: {osInfo}\n" +
+                                     $"主窗口: {mainStatus}\n\n" +
+                                     $"💡 提示:\n" +
+                                     $"• F4: 切换防录屏状态";
+                
+                MessageBox.Show(statusMessage, "防录屏状态", MessageBoxButton.OK, MessageBoxImage.Information);
+                
+                string titleMessage = success ? "防录屏已启用" : "防录屏已禁用";
+                Title = $"超星考试客户端 - {titleMessage}";
+                
+                // 3秒后恢复原标题
+                var timer = new System.Windows.Threading.DispatcherTimer
+                {
+                    Interval = TimeSpan.FromSeconds(3)
+                };
+                timer.Tick += (s, e) =>
+                {
+                    Title = "超星考试客户端";
+                    timer.Stop();
+                };
+                timer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"切换防录屏失败:\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                Title = "超星考试客户端 - 防录屏功能异常";
+                
+                var timer = new System.Windows.Threading.DispatcherTimer
+                {
+                    Interval = TimeSpan.FromSeconds(3)
+                };
+                timer.Tick += (s, e) =>
+                {
+                    Title = "超星考试客户端";
+                    timer.Stop();
+                };
+                timer.Start();
+            }
+        }
+
+
         #endregion
 
         #region 文本框焦点处理
@@ -409,7 +490,18 @@ namespace CxExamClient
 
         protected override void OnClosed(EventArgs e)
         {
-            _aiService?.Dispose();
+            try
+            {
+                // 清理AI服务
+                _aiService?.Dispose();
+                
+                System.Diagnostics.Debug.WriteLine("程序资源清理完成");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"资源清理失败: {ex.Message}");
+            }
+            
             base.OnClosed(e);
         }
     }
