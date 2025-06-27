@@ -1,10 +1,28 @@
-# 超星学习通辅助工具 - Go版本
+# 超星学习通辅助工具 - 终极版本
 
 ![GitHub stars](https://img.shields.io/github/stars/SJYssr/CX_EXAM_python?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/SJYssr/CX_EXAM_python?style=social)
 ![License](https://img.shields.io/github/license/SJYssr/CX_EXAM_python)
 
-> 🎓 一个功能强大的超星学习通辅助工具，采用Go+Python混合开发，具备防录屏保护、AI智能搜索和自动输入等实用功能。
+> 🎓 一个功能强大的超星学习通辅助工具，**已优化为纯Go语言开发**，完美解决中文显示问题，提供多种界面选择。
+
+## 🎯 最新版本（已清理优化）
+
+项目已精简优化，从40+文件减少到20个核心文件，提供3个高质量版本：
+
+### 📱 可用版本
+
+| 版本 | 文件名 | 大小 | 特点 | 推荐度 |
+|------|--------|------|------|--------|
+| **Webview版** | `chaoxing_webview_ultimate.exe` | 9.3MB | 浏览器界面，中文显示100%完美 | ⭐⭐⭐⭐⭐ |
+| GUI版 | `chaoxing_gui_fixed.exe` | 38MB | 原生GUI，字体修复 | ⭐⭐⭐ |
+| 控制台版 | `chaoxing_working_console.exe` | 2.7MB | 简单稳定，无GUI问题 | ⭐⭐⭐⭐ |
+
+### 🚀 快速启动
+
+**推荐方法**：双击 `启动GUI解决方案.bat` 选择版本
+
+**最佳选择**：`chaoxing_webview_ultimate.exe`（体积小、显示完美、功能完整）
 
 ## ✨ 主要特性
 
