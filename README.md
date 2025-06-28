@@ -296,27 +296,6 @@ PATH:
   path: "tiku.txt"  # 题库文件路径
 ```
 
-## 📄 开源许可
-
-本项目基于MIT许可证开源，详细信息请查看 [LICENSE](LICENSE) 文件。
-
-## 🤝 贡献指南
-
-欢迎提交Bug报告、功能请求或代码贡献：
-
-1. Fork本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建Pull Request
-
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 📧 邮箱：[您的邮箱]
-- 🐛 Issues：[GitHub Issues](https://github.com/maoqijie/CX_EXAM_python/issues)
-
 ---
 
 **⚠️ 免责声明**：本工具仅供学习和研究使用，请遵守相关法律法规和考试规定。使用者应自行承担使用本工具的风险和责任。 
