@@ -1,0 +1,105 @@
+<Window x:Class="CxExamClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="fuck超星" 
+        Height="533" Width="300"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="White"
+        Opacity="0.5"
+        Topmost="True"
+        Left="0" Top="380"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource ModernTextBoxStyle}"/>
+    </Window.Resources>
+
+    <Grid x:Name="MainGrid">
+        <!-- 主界面 -->
+        <Grid x:Name="MainFrame" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 搜索框架 -->
+            <DockPanel Grid.Row="0" x:Name="SearchFrame" Margin="5">
+                <Button x:Name="DebugButton" Content="调试" DockPanel.Dock="Right" 
+                        Width="40" Click="DebugButton_Click"/>
+                <Button x:Name="AiButton" Content="AI" DockPanel.Dock="Right" 
+                        Width="40" Click="AiButton_Click"/>
+                <Button x:Name="SearchButton" Content="搜索" DockPanel.Dock="Right" 
+                        Width="50" Click="SearchButton_Click"/>
+                <TextBox x:Name="SearchEntry" 
+                         KeyDown="SearchEntry_KeyDown"
+                         GotFocus="TextBox_GotFocus"
+                         LostFocus="TextBox_LostFocus"
+                         Text="输入关键词搜索..."/>
+            </DockPanel>
+
+            <!-- 文本框架 -->
+            <DockPanel Grid.Row="1" Margin="5">
+                <RichTextBox x:Name="TextBox" 
+                             IsReadOnly="True"
+                             FontSize="10"
+                             Background="White"
+                             VerticalScrollBarVisibility="Auto"/>
+            </DockPanel>
+
+            <!-- 底部框架 -->
+            <DockPanel Grid.Row="2" x:Name="BottomFrame" Margin="5">
+                <Button x:Name="SubmitButton" Content="输入" DockPanel.Dock="Right" 
+                        Width="50" Click="SubmitButton_Click"/>
+                <TextBox x:Name="InputEntry" 
+                         KeyDown="InputEntry_KeyDown"
+                         GotFocus="TextBox_GotFocus"
+                         LostFocus="TextBox_LostFocus"
+                         Text="输入内容后点击输入按钮..."/>
+            </DockPanel>
+        </Grid>
+
+        <!-- AI界面 -->
+        <Grid x:Name="AiFrame" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- AI搜索框架 -->
+            <DockPanel Grid.Row="0" x:Name="AiSearchFrame" Margin="5">
+                <Button x:Name="BackButton" Content="返回" DockPanel.Dock="Right" 
+                        Width="50" Click="BackButton_Click"/>
+                <Button x:Name="AiSearchButton" Content="AI搜索" DockPanel.Dock="Right" 
+                        Width="60" Click="AiSearchButton_Click"/>
+                <TextBox x:Name="AiSearchEntry" 
+                         KeyDown="AiSearchEntry_KeyDown"
+                         GotFocus="TextBox_GotFocus"
+                         LostFocus="TextBox_LostFocus"
+                         Text="输入问题进行AI搜索..."/>
+            </DockPanel>
+
+            <!-- AI文本框 -->
+            <RichTextBox Grid.Row="1" x:Name="AiTextBox" 
+                         IsReadOnly="True"
+                         FontSize="10"
+                         Background="White"
+                         VerticalScrollBarVisibility="Auto"
+                         Margin="5"/>
+
+            <!-- AI底部框架 -->
+            <DockPanel Grid.Row="2" x:Name="AiBottomFrame" Margin="5">
+                <Button x:Name="AiSubmitButton" Content="输入" DockPanel.Dock="Right" 
+                        Width="50" Click="AiSubmitButton_Click"/>
+                <TextBox x:Name="AiInputEntry" 
+                         KeyDown="AiInputEntry_KeyDown"
+                         GotFocus="TextBox_GotFocus"
+                         LostFocus="TextBox_LostFocus"
+                         Text="输入AI答案..."/>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window> 
